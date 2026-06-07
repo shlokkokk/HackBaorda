@@ -86,6 +86,11 @@ export const config = {
 
   // CORS
   cors: {
-    origins: optionalEnv('CORS_ORIGINS', 'http://localhost:3000').split(','),
+    origins: optionalEnv('CORS_ORIGINS', 'http://localhost:3000,http://localhost:3002').split(','),
+  },
+
+  // Demo victim app (UptimeRobot + verify_fix)
+  demoApp: {
+    url: optionalEnv('DEMO_APP_URL', 'http://localhost:3002'),
   },
 } as const;

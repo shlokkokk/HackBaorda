@@ -25,7 +25,7 @@ async function run() {
   console.log('   - Platform: Next.js (or Node.js depending on service)');
   console.log('   - Name:     sentinel-demo-app');
   console.log('3. Copy the client DSN keys and paste them into:');
-  console.log('   - apps/web/.env.local (as NEXT_PUBLIC_SENTRY_DSN)');
+  console.log('   - apps/demo/.env.local (as NEXT_PUBLIC_SENTRY_DSN) — primary victim app');
   console.log('   - apps/api/.env (as SENTRY_DSN)');
   console.log('4. Create an Internal Integration for webhook alerts:');
   console.log('   - Go to Settings -> Developer Settings -> Internal Integrations -> "New Internal Integration"');
