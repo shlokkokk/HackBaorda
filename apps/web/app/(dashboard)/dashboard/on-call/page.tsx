@@ -20,8 +20,8 @@ import {
 interface User {
   id: string;
   org_id: string;
-  name: string;
-  email: string;
+  name: string | null;
+  email: string | null;
   role: 'admin' | 'responder' | 'viewer';
   slack_user_id?: string;
   on_call: boolean;
@@ -38,6 +38,10 @@ const item = {
 };
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+function getResponderName(user: Pick<User, 'name' | 'email'>): string {
+  return user.name?.trim() || user.email?.split('@')[0] || 'Responder';
+}
 
 export default function OnCallPage() {
   const { getToken } = useAuth();
@@ -120,10 +124,10 @@ export default function OnCallPage() {
                   <div key={u.id} className="flex items-center justify-between p-4 rounded-lg bg-success/5 border border-success/15">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-success/10 text-success flex items-center justify-center font-bold text-sm shrink-0">
-                        {(u.name ?? u.email ?? 'US').substring(0, 2).toUpperCase()}
+                        {getResponderName(u).substring(0, 2).toUpperCase()}
                       </div>
                       <div>
-                        <p className="text-base font-bold text-foreground">{u.name ?? 'Unnamed Responder'}</p>
+                        <p className="text-base font-bold text-foreground">{getResponderName(u)}</p>
                         <p className="text-xs text-muted-foreground flex items-center gap-1.5 mt-0.5">
                           <Mail className="w-3.5 h-3.5" />
                           {u.email}
@@ -162,7 +166,7 @@ export default function OnCallPage() {
               return (
                 <div key={day} className="flex items-center justify-between text-xs py-1.5 border-b border-border/20 last:border-b-0">
                   <span className="font-medium text-muted-foreground">{day}</span>
-                  <span className="font-semibold text-foreground">{assignee ? assignee.name : 'Unassigned'}</span>
+                  <span className="font-semibold text-foreground">{assignee ? getResponderName(assignee) : 'Unassigned'}</span>
                 </div>
               );
             })}
@@ -193,7 +197,7 @@ export default function OnCallPage() {
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <h3 className="text-sm font-bold text-foreground">{user.name ?? 'Unnamed Responder'}</h3>
+                    <h3 className="text-sm font-bold text-foreground">{getResponderName(user)}</h3>
                     <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                     <span className="inline-block mt-2 px-2 py-0.5 rounded text-[10px] bg-primary/10 text-primary font-mono uppercase font-bold">
                       {user.role}
@@ -201,7 +205,7 @@ export default function OnCallPage() {
                   </div>
 
                   <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center font-bold text-xs shrink-0 select-none">
-                    {(user.name ?? user.email ?? 'US').substring(0, 2).toUpperCase()}
+                    {getResponderName(user).substring(0, 2).toUpperCase()}
                   </div>
                 </div>
 
