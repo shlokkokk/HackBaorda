@@ -8,7 +8,7 @@ import { config } from '../lib/config.js';
 import { logger } from '../lib/logger.js';
 import { getSupabase } from '../db/client.js';
 import { searchMemories } from '../services/mem0.js';
-import { searchSimilarIncidents } from '../services/embeddings.js';
+import { searchSimilarIncidents, searchSimilarRunbooks } from '../services/embeddings.js';
 import { getSLAStatus } from '../services/sla.js';
 import { SYSTEM_PROMPT } from './prompts/system.js';
 import type { AgentResponse, Incident, MemoryResult } from '@sentinel/shared';
@@ -49,7 +49,8 @@ function extractTextContent(content: unknown): string {
 
 function formatMemoryContext(
   memories: MemoryResult[],
-  pgResults: Awaited<ReturnType<typeof searchSimilarIncidents>>
+  pgResults: Awaited<ReturnType<typeof searchSimilarIncidents>>,
+  runbooks: Awaited<ReturnType<typeof searchSimilarRunbooks>>
 ): string {
   const lines: string[] = [];
 
@@ -61,8 +62,28 @@ function formatMemoryContext(
       `- [Past incident ${((r.similarity ?? 0) * 100).toFixed(0)}%] ${r.title} | Root: ${r.root_cause ?? 'unknown'} | Fix: ${r.resolution ?? 'unknown'}`
     );
   }
+  for (const rb of runbooks) {
+    lines.push(
+      `- [Runbook ${((rb.similarity ?? 0) * 100).toFixed(0)}%] ${rb.title} | Type: ${rb.incident_type ?? 'unknown'} | Safe automation: ${rb.safe_to_automate ? 'yes' : 'no'} | Steps: ${formatRunbookSteps(rb.steps)}`
+    );
+  }
 
   return lines.length > 0 ? lines.join('\n') : 'No similar past incidents in memory yet.';
+}
+
+function formatRunbookSteps(steps: unknown): string {
+  if (!Array.isArray(steps)) return 'No steps listed';
+
+  return steps
+    .slice(0, 4)
+    .map((step, index) => {
+      if (!step || typeof step !== 'object') return `${index + 1}. ${String(step)}`;
+      const record = step as Record<string, unknown>;
+      const name = String(record['name'] ?? record['description'] ?? `Step ${index + 1}`);
+      const command = record['command'] ? ` (${String(record['command'])})` : '';
+      return `${index + 1}. ${name}${command}`;
+    })
+    .join('; ');
 }
 
 function buildSystemPrompt(incident: Incident, memoryBlock: string, slaBlock: string): string {
@@ -97,9 +118,10 @@ export async function runAgent(
     const searchQuery = `${incident.title} ${query}`;
 
     const prefetchStart = Date.now();
-    const [memories, pgResults] = await Promise.all([
-      searchMemories(searchQuery, orgId, 3),
-      searchSimilarIncidents(searchQuery, orgId, 3),
+    const [memories, pgResults, runbooks] = await Promise.all([
+      searchMemories(searchQuery, orgId, 5),
+      searchSimilarIncidents(searchQuery, orgId, 5),
+      searchSimilarRunbooks(searchQuery, orgId, 3),
     ]);
     log.debug({ prefetchMs: Date.now() - prefetchStart }, 'Memory prefetch done');
 
@@ -107,7 +129,7 @@ export async function runAgent(
       ? JSON.stringify(getSLAStatus(new Date(incident.sla_breach_at)))
       : 'No SLA deadline set';
 
-    const memoryBlock = formatMemoryContext(memories, pgResults);
+    const memoryBlock = formatMemoryContext(memories, pgResults, runbooks);
     const systemText = buildSystemPrompt(incident, memoryBlock, slaBlock);
 
     const groqStart = Date.now();
@@ -122,7 +144,7 @@ export async function runAgent(
       extractTextContent(response.content) ||
       'I could not generate a response. Please try a shorter question.';
 
-    const toolsUsed = memories.length > 0 || pgResults.length > 0 ? ['search_memory'] : [];
+    const toolsUsed = memories.length > 0 || pgResults.length > 0 || runbooks.length > 0 ? ['search_memory'] : [];
 
     // Log interaction without blocking the HTTP response
     void getSupabase()

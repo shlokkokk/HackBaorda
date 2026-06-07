@@ -16,7 +16,8 @@
     "dev:agent": "turbo dev --filter=@sentinel/agent",
     "dev:demo": "turbo dev --filter=@sentinel/demo",
     "db:setup": "tsx scripts/setup-db.ts",
-    "db:seed": "tsx scripts/seed-incidents.ts && tsx scripts/seed-runbooks.ts",
+    "db:seed": "tsx scripts/seed-incidents.ts && tsx scripts/seed-runbooks.ts && tsx scripts/train-ai-demo.ts",
+    "ai:train": "tsx scripts/train-ai-demo.ts",
     "setup:agent": "tsx scripts/setup-agent.ts",
     "setup:demo": "tsx scripts/setup-demo.ts",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\""

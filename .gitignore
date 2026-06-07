@@ -7,6 +7,7 @@ dist/
 .next/
 out/
 build/
+.vercel/
 
 # Turborepo
 .turbo/
@@ -33,15 +34,25 @@ logs/
 *.log
 npm-debug.log*
 pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # Testing
 coverage/
+test-results/
+playwright-report/
 
 # Sentinel Agent data
 .sentinel-agent/
+sentinel-agent/data/
 
 # Misc
 *.tsbuildinfo
+.cache/
+.parcel-cache/
+*.bak
+*.tmp
+*.temp
 
 # Internal Documents & Brain Files
 /internal docs/

@@ -1,207 +1,620 @@
-# 🛡️ Sentinel — AI-Native Incident Response & Intelligent Memory Platform
-> **HackBaroda 2026 Community Edition** • Track 5 (AI & Developer Tools)  
-> *Sentinel is a premium, production-grade incident management co-pilot that learns from past outages to auto-triage and resolve future ones.*
+# Sentinel
+
+AI-native incident response, operational memory, and live chaos-demo platform for engineering teams.
+
+Sentinel turns fragmented production alerts into one coordinated response loop: detect the incident, deduplicate noisy signals, retrieve similar past outages, suggest the best fix, watch SLA risk, notify responders, learn from the resolution, and generate the postmortem.
+
+Built for HackBaroda 2026, Track 5: AI and Developer Tools.
 
 ---
 
-## 📌 The Problem
-Incident response is broken. When production goes down:
-1. **Time to Resolution (MTTR) is High**: Engineers waste an average of **45+ minutes** digging through old Slack threads, past runbooks, and postmortems trying to answer: *"Have we seen this before? How did we fix it last time?"*
-2. **Alert Fatigue**: Disparate monitoring systems (Sentry, UptimeRobot, CloudWatch, manual reports) trigger duplicate alarms simultaneously, causing alert storms and responder confusion.
-3. **No Continuous Learning**: Knowledge from resolved incidents lives inside engineers' heads or gets lost in static docs. It never feeds back into the system to automate future responses.
+## The Problem
+
+Modern incident response is still painfully manual.
+
+When a production system breaks, teams usually lose time to the same repeated work:
+
+- Finding whether this has happened before.
+- Searching Slack, dashboards, runbooks, postmortems, and issue trackers.
+- Separating real incidents from duplicate alerts.
+- Guessing severity while customer impact is still changing.
+- Remembering the exact fix that worked last time.
+- Writing the same incident summary after everyone is already exhausted.
+
+The result is high MTTR, noisy alert storms, lost operational knowledge, and slow onboarding for new responders.
 
 ---
 
-## ⚡ The Sentinel Solution
-Sentinel is an **AI-native incident lifecycle platform** featuring a **persistent memory layer** that learns from every resolved outage. 
+## The Solution
 
-```
-┌──────────────────────────────────────────────────────────────────────────┐
-│                           INGESTION LAYER                                │
-│                                                                          │
-│  ┌─────────────┐  ┌─────────────┐  ┌──────────────┐  ┌─────────────┐     │
-│  │ UptimeRobot │  │   Sentry    │  │Sentinel Agent│  │ Slack / Web │     │
-│  └──────┬──────┘  └──────┬──────┘  └──────┬───────┘  └──────┬──────┘     │
-│         │                │                │                 │            │
-│         └────────────────┴───────┬────────┴─────────────────┘            │
-│                                  │                                       │
-│                        ┌─────────▼──────────┐                            │
-│                        │  WEBHOOK ROUTER    │                            │
-│                        │  • Deduplication   │                            │
-│                        │  • Verification    │                            │
-│                        └─────────┬──────────┘                            │
-└──────────────────────────────────┼───────────────────────────────────────┘
-                                   │ normalized incident
-┌──────────────────────────────────▼───────────────────────────────────────┐
-│                      SENTINEL CORE API (Node + Express)                  │
-│                                                                          │
-│    • SLA Daemon Loop               • Ingestion Health Registry           │
-│    • Multi-tenant Isolation        • Event Bus Dispatcher                │
-└──────────────────────────────────┬───────────────────────────────────────┘
-                                   │
-┌──────────────────────────────────▼───────────────────────────────────────┐
-│                      SENTINEL AI AGENT (LangChain)                       │
-│                                                                          │
-│    • LLM (Groq Qwen-32B)           • Persistent Memory (Mem0 Cloud)      │
-│    • pgvector Semantic Backup      • 9 Automated Tool Connectors         │
-└──────────────────────────────────────────────────────────────────────────┘
-```
+Sentinel is an incident response command center with an AI memory layer.
 
-When an alert triggers, Sentinel detects it, normalizes it, deduplicates it, searches its long-term memory for prior solutions, suggests the fix in Slack and the dashboard, auto-escalates on SLA breaches, and drafts a complete postmortem on resolution.
+It connects alerts from multiple sources, normalizes them into incidents, deduplicates related signals, and gives responders an AI co-pilot that can answer:
+
+- "Have we seen this before?"
+- "What fixed it last time?"
+- "Which runbook should I use?"
+- "How urgent is the SLA risk?"
+- "What should I do next?"
+
+Every resolved incident becomes reusable operational memory. The next similar outage gets a faster, more confident response.
 
 ---
 
-## 🌟 Key Features
+## What Makes Sentinel Different
 
-### 1. Unified Webhook Ingestion & Deduplication
-- **Multi-Source Adapters**: Native, signature-verified endpoints for **Sentry**, **UptimeRobot**, **Slack Commands**, **Sentinel Agent**, and **Manual Submissions**.
-- **Timing-Safe Fingerprinting**: Prevents alert fatigue. Duplicate alerts within a 10-minute window are automatically merged into a single incident with a list of historical sources.
+### 1. Persistent AI Memory
 
-### 2. Autonomous ReAct Agent Co-Pilot (LangChain + Groq)
-- Uses Groq's high-speed **Qwen-3-32B** model orchestrated via LangChain tool-calling.
-- **9 Specialized Tools**:
-  1. `search_memory` — semantic search across prior incidents.
-  2. `suggest_fix` — pulls exact instructions, code patches, or rollback steps.
-  3. `score_severity` — assesses impact and sets triage priority.
-  4. `check_sla` — checks SLA breach warnings.
-  5. `notify_slack` — broadcasts thread alerts.
-  6. `verify_fix` — verifies service health endpoints.
-  7. `runbook_mock_executor` — safe-to-automate fix simulator.
-  8. `write_memory` — writes learned rules on resolution.
-  9. `generate_postmortem` — drafts markdown summaries.
+Sentinel does not just chat. It learns.
 
-### 3. Persistent Organization Memory (Mem0)
-- Scoped multi-tenant memory workspace.
-- Learns dynamically on resolution: *"Restart payment pod and clear redis cache"* gets extracted, vectorized, and written to Mem0. Next time a similar outage occurs, the agent presents the fix instantly.
+Resolved incidents are written into memory with:
 
-### 4. Background SLA & Scope Escalation Daemon
-- A background process checking open incidents every 60 seconds:
-  - **SLA Escalation**: Auto-upgrades severity if unresolved (`P3` ➔ `P2` after 15m; `P2` ➔ `P1` after 10m; `P1` ➔ `P0` after 5m).
-  - **Scope Escalation**: Dynamically bumps severity if the blast radius expands (3+ affected services ➔ `P1`; 5+ services ➔ `P0`).
-  - Automatically recalculates new SLA breach times and pings incident owners on Slack.
+- Root cause
+- Effective fix
+- Commands used
+- Services affected
+- Detection source
+- Severity
+- Time to resolve
+- Lessons learned
 
-### 5. Ingestion Health Monitoring
-- Dashboard panel tracks active sources.
-- Flags staleness based on source-specific heartbeats (e.g. 2m for Sentinel Host Agent, 10m for UptimeRobot).
+Future incidents use this memory through Mem0 and pgvector-backed semantic retrieval.
 
-### 6. Interactive Slack Bot & Commands
-- **Thread Listener**: Reply directly in the Slack alert thread, and the bot contextually invokes the AI co-pilot, utilizing memories to recommend troubleshooting commands.
-- **Slash Commands**: Manage state directly via `/sentinel new [Title]`, `/sentinel status`, `/sentinel resolve [ID]`, and `/sentinel sources`.
+### 2. Incident-Aware AI Agent
+
+The AI agent receives the full current incident context plus preloaded retrieval results before responding. It can use:
+
+- Similar past incidents
+- Mem0 long-term memory
+- pgvector incident search
+- Matching runbooks
+- SLA status
+- Affected services
+- Source and severity
+
+This makes its answers specific to the incident instead of generic DevOps advice.
+
+### 3. Runbook Retrieval
+
+Runbooks are embedded and searched semantically. When a new incident looks like a payment timeout, Stripe webhook failure, Redis memory issue, database pool exhaustion, or checkout regression, the AI can retrieve concrete remediation steps and commands.
+
+### 4. Multi-Source Ingestion
+
+Sentinel supports incident creation from:
+
+- Sentry
+- UptimeRobot
+- Sentinel host agent
+- Slack commands
+- GitHub issue webhooks
+- Manual dashboard reports
+- Demo webhooks
+
+All sources flow into one normalized incident model.
+
+### 5. Alert Deduplication
+
+Incoming alerts are fingerprinted and merged when they describe the same underlying incident. This reduces alert fatigue and keeps responders focused on one source of truth.
+
+### 6. SLA and Scope Escalation
+
+Sentinel tracks SLA breach deadlines by severity and runs a background daemon that can escalate unresolved incidents as urgency increases.
+
+Severity targets are configurable per organization:
+
+| Severity | Meaning | Default SLA |
+| --- | --- | --- |
+| P0 | Critical outage | 15 minutes |
+| P1 | Major customer impact | 60 minutes |
+| P2 | Significant degradation | 4 hours |
+| P3 | Minor degradation | 24 hours |
+| P4 | Low priority | 7 days |
+
+### 7. Postmortem Drafting
+
+When an incident is resolved, Sentinel can generate a structured postmortem draft with summary, timeline, root cause, impact, resolution, lessons learned, and prevention actions.
+
+### 8. Live Monitoring Agent
+
+The Sentinel agent runs on monitored hosts and collects local system snapshots. It includes:
+
+- Baseline learning
+- Anomaly evaluation
+- Alert batching
+- Retry queue
+- Circuit breaker
+- Heartbeat reporting
+- Host and collector health visibility
+
+### 9. Real Demo Application
+
+The repo includes ShopFlow, a demo e-commerce app with controllable failure modes. Judges can trigger realistic incidents and watch Sentinel respond in the dashboard.
 
 ---
 
-## 📁 Project Architecture
+## Demo Scenarios
 
-```
-HackBaroda/
-├── apps/
-│   ├── api/                  # Node.js + Express backend service
-│   │   ├── src/
-│   │   │   ├── index.ts      # Server entry, starts SLA Daemon
-│   │   │   ├── app.ts        # App setup, CORS, raw body middleware
-│   │   │   ├── agent/        # LangChain ReAct agent loops & prompts
-│   │   │   ├── db/           # Supabase PG vector client & schema
-│   │   │   ├── middleware/   # Clerk, org-isolation, and signature verifications
-│   │   │   └── services/     # SLA calculations, Slack, Mem0, notifications
-│   ├── web/                  # Next.js 14 Command Center dashboard
-│   │   ├── app/
-│   │   │   ├── (dashboard)/  # Command Center dashboard, analytics, and settings
-│   │   │   └── sign-in/      # Clerk login routes
-│   │   └── lib/              # API wrapper helper & utility functions
-│   └── demo/                 # ShopFlow — victim app for live incident demos
-│       ├── app/api/health/   # UptimeRobot health endpoint
-│       └── app/demo/         # Chaos engineering control panel
-├── packages/
-│   ├── shared/               # Shared TS interfaces, constants, and utilities
-├── sentinel-agent/           # Metric collector agent for monitored hosts
-└── scripts/                  # Setup validation and seed scripts
-```
+ShopFlow includes realistic chaos scenarios aligned with Sentinel's training corpus.
+
+| Scenario | What Breaks | Detection Source | AI Should Recall |
+| --- | --- | --- | --- |
+| Payment Timeout | `/api/payments` returns 504 | Sentinel agent | Payment retry storm, pool saturation, stuck workers |
+| Duplicate Transaction Risk | Retry behavior creates charge risk | Sentry/manual | Idempotency keys and reconciliation |
+| Stripe Webhook Failure | Signature validation fails | Sentry | Secret rotation and event replay |
+| Gateway Overload | APIs return 503 | Sentinel agent | Database pool exhaustion mitigation |
+| Checkout JS Error | Frontend checkout crash | Sentry | Rollback and token guard fix |
+| Slow Search | Search latency spikes | Manual | Missing index and query tuning |
+| Redis Memory Pressure | Cache reaches capacity | Sentinel agent | Eviction policy and defrag |
+| SSL Expiry | Certificate warning | UptimeRobot | Cert renewal and ingress restart |
 
 ---
 
-## 🛠️ Developer Setup & Commands
+## AI Training Corpus
 
-Sentinel is configured as a Monorepo using **Turborepo** and **pnpm**.
+Sentinel ships with a dedicated training script for the hackathon demo:
 
-### 1. Prerequisites
-Ensure you have Node.js 20+, pnpm, and Git installed.
-
-### 2. Clone and Install
 ```bash
-git clone https://github.com/shlokkokk/HackBaorda.git
-cd HackBaorda
+pnpm ai:train
+```
+
+This seeds and updates:
+
+- 10 resolved incident memories
+- 7 production-style runbooks
+- pgvector embeddings for incident similarity
+- pgvector embeddings for runbook matching
+- Mem0 memories when `MEM0_API_KEY` is configured
+
+The script is intentionally part of the repo because it demonstrates the core product idea: Sentinel gets better as it learns operational history.
+
+Covered domains include:
+
+- Payment authorization timeouts
+- Transaction retry storms
+- Duplicate charge prevention
+- Stripe webhook signature failures
+- Payment worker backlogs
+- Database pool exhaustion
+- Gateway overload
+- Checkout frontend crashes
+- Search API latency
+- Redis memory pressure
+- Auth token parsing failures
+- SSL certificate renewal
+
+---
+
+## Complete Feature Map
+
+### Dashboard: Command Center
+
+The command center is the first screen responders use during a live incident. It gives a real-time overview of operational health and keeps refreshing automatically.
+
+- Open incidents
+- Resolved incidents
+- MTTR
+- SLA breaches
+- Recent incidents
+- Ingestion source health
+- Quick actions for incidents, analytics, runbooks, and the chaos panel
+- Live source status for Sentry, UptimeRobot, Sentinel Agent, Slack, GitHub, and manual reports
+
+### Incidents: Response Workspace
+
+Responders can:
+
+- Search and filter incidents
+- Create manual incidents
+- View severity, status, source, affected services, and timestamps
+- Open an incident detail page
+- Ask the AI co-pilot for triage or fixes
+- Update incident state through the response lifecycle
+- Track the incident state machine from open to investigating, mitigating, resolved, and postmortem
+- Preserve root cause and resolution details for future learning
+
+### Incident Detail: AI Co-Pilot
+
+The agent can:
+
+- Search memory
+- Suggest a fix
+- Score severity
+- Check SLA status
+- Retrieve runbooks
+- Notify Slack
+- Update status
+- Write new memory
+- Verify a health endpoint
+- Generate a postmortem
+- Explain confidence and cite retrieved incident memory or runbook context
+- Use the current incident title, severity, source, services, description, and SLA deadline
+
+### Analytics: Response Intelligence
+
+The analytics API provides:
+
+- Incident totals
+- Open and resolved counts
+- MTTR
+- SLA breach counts
+- Severity breakdown
+- Source breakdown
+- MTTR trend
+- Incident heatmap
+- Agent memory count
+- Day-by-hour incident patterns
+- Visual response-performance cards
+
+### Runbooks: Automation Library
+
+Runbooks are stored per organization and can be searched semantically by the AI agent. Each runbook can define:
+
+- Incident type
+- Ordered steps
+- Commands
+- Automation safety
+- Confidence threshold
+- Search by title or incident type
+- Expandable step-by-step procedures
+- Manual-only and safe-to-automate modes
+- Creation UI for custom operational playbooks
+
+### Postmortems: Learning Archive
+
+Postmortems are generated and managed inside the dashboard.
+
+- Automatic draft creation when incidents are resolved
+- Searchable postmortem archive
+- Draft, in-review, and published states
+- Markdown-style incident report rendering
+- Print or export flow for sharing reports
+- Timeline, impact, root cause, resolution, lessons, and prevention sections
+
+### Agent Fleet: Host Monitoring
+
+Sentinel shows the status of every connected host agent.
+
+The fleet page shows host-agent health:
+
+- Hostname and agent ID
+- Platform and architecture
+- Last heartbeat
+- Active and failed collectors
+- Baseline learning status
+- Circuit breaker state
+- Auto-discovered services
+- IP addresses
+- Agent version
+- Healthy, degraded, stale, and offline states
+- Collector-level visibility for debugging monitoring gaps
+
+### On-Call: Escalation Routing
+
+The on-call page helps teams route incidents to the right responder.
+
+- Active responder panel
+- On-call roster
+- Toggle users on or off duty
+- Responder roles
+- Slack identity awareness
+- Weekly rotation-style schedule view
+- Empty-state warning when nobody is on call
+
+### Settings: Workspace Control
+
+The settings page configures organization-level behavior.
+
+- Workspace profile
+- Slack workspace ID
+- SLA policy per severity
+- Webhook integration URLs
+- Organization ingestion secret
+- Copy-ready endpoints for monitoring providers
+- UptimeRobot, Sentry, GitHub, and Sentinel Agent webhook setup
+
+### ShopFlow Demo: Live Failure Simulator
+
+ShopFlow is the live victim app. It lets judges trigger incidents instead of only reading seeded data.
+
+Routes include:
+
+- Storefront
+- Checkout
+- Health endpoint
+- Payments endpoint
+- Search endpoint
+- Stripe webhook endpoint
+- Chaos control panel
+
+### Sentinel Agent: Infrastructure Watcher
+
+The local host agent provides infrastructure telemetry and incident signals.
+
+- System snapshot collection
+- Baseline learner
+- Anomaly alert engine
+- Batch sender
+- Retry queue
+- Circuit breaker
+- Heartbeat sender
+- Graceful shutdown
+- Collector health tracking
+
+### Backend Platform
+
+The API is the operational core of Sentinel.
+
+- Express server with security middleware
+- Clerk auth and organization isolation
+- Incident CRUD
+- State transition validation
+- Deduplication and fingerprinting
+- SLA calculation and daemon escalation
+- Webhook routing
+- Ingestion health registry
+- Analytics routes
+- Runbook routes
+- Postmortem routes
+- Agent query routes
+- Event bus listeners for auto-triage and learning
+
+### Webhook Integrations
+
+Sentinel accepts signals from multiple operational systems.
+
+- Sentry issue alerts
+- UptimeRobot uptime alerts
+- GitHub issue webhooks
+- Slack commands and thread interactions
+- Sentinel Agent ingest
+- Demo app webhooks
+- Manual reports from the dashboard
+
+---
+
+## Architecture
+
+```text
+HackBaroda/
+  apps/
+    api/              Express API, AI agent, webhooks, SLA daemon, Supabase access
+    web/              Next.js command center dashboard
+    demo/             ShopFlow demo app with controllable failures
+  packages/
+    shared/           Shared TypeScript types, constants, validation, utilities
+  sentinel-agent/     Host monitoring agent with baseline learning and alert pipeline
+  scripts/            Setup, seed, and AI training scripts
+```
+
+High-level flow:
+
+```text
+Monitoring source
+  -> webhook adapter
+  -> normalized incident
+  -> deduplication
+  -> Supabase incident store
+  -> event bus
+  -> AI auto-triage
+  -> memory/runbook retrieval
+  -> Slack/dashboard response
+  -> resolution learning
+  -> postmortem draft
+```
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+| --- | --- |
+| Monorepo | pnpm workspaces, Turborepo |
+| API | Node.js, Express, TypeScript |
+| Dashboard | Next.js, React, Tailwind CSS, Clerk |
+| Demo App | Next.js, Sentry-ready instrumentation |
+| AI | LangChain, Groq, Mem0 |
+| Memory Search | Supabase Postgres, pgvector |
+| Database | Supabase |
+| Auth | Clerk |
+| Notifications | Slack Bot API |
+| Monitoring | UptimeRobot, Sentry, custom Sentinel agent |
+| Validation | Zod |
+| Logging | Pino |
+
+---
+
+## Core API Surface
+
+| Area | Endpoint |
+| --- | --- |
+| Health | `GET /api/health` |
+| Incidents | `/api/incidents` |
+| Agent query | `POST /api/agent/query` |
+| Agent memory stats | `GET /api/agent/memory/stats` |
+| Agent fleet | `GET /api/agent/hosts` |
+| Analytics | `/api/analytics/*` |
+| Ingestion health | `GET /api/ingestion/health` |
+| Runbooks | `/api/runbooks` |
+| Postmortems | `/api/postmortems` |
+| Webhooks | `/api/webhooks/*` |
+
+---
+
+## Setup
+
+### 1. Install
+
+```bash
 pnpm install
 ```
 
-### 3. Configure Environments
-Create `.env` configurations for each application (copy from `.env.example`):
-- Backend configurations: `apps/api/.env`
-- Frontend configurations: `apps/web/.env.local`
-- Demo victim app: `apps/demo/.env.local` (optional Sentry DSN)
-- Agent configurations: `sentinel-agent/.env`
+### 2. Configure Environment
 
-### 4. Build and Validate
-Check types, linting, and compile the complete monorepo bundle:
-```bash
-pnpm build
+Copy `.env.example` values into the relevant service files:
+
+```text
+apps/api/.env
+apps/web/.env.local
+apps/demo/.env.local
+sentinel-agent/.env
 ```
 
-### 5. Database Setup & Seeding
-Set up tables, vector indexes, and seed realistic demo incident/runbook data:
-```bash
-pnpm db:setup     # Verifies connection
-pnpm db:seed      # Seeds 10 incidents & 5 runbooks into Supabase
-pnpm setup:agent  # Auto-configures sentinel-agent ORG_ID from database
-```
-> Mem0 memories are written automatically when incidents are resolved via the event listener — not during seed.
+Required for the full demo:
 
-### 6. Start Development Servers
-Runs backend API, dashboard, host agent, and demo victim app:
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `CLERK_SECRET_KEY`
+- `GROQ_API_KEY`
+- `MEM0_API_KEY`
+
+Optional integrations:
+
+- `SLACK_BOT_TOKEN`
+- `SLACK_SIGNING_SECRET`
+- `SENTRY_WEBHOOK_SECRET`
+- `UPTIMEROBOT_WEBHOOK_SECRET`
+- `RESEND_API_KEY`
+- `UPSTASH_REDIS_REST_URL`
+- `UPSTASH_REDIS_REST_TOKEN`
+
+### 3. Set Up Database
+
+Run the SQL in:
+
+```text
+apps/api/src/db/schema.sql
+```
+
+Then verify the database connection:
+
+```bash
+pnpm db:setup
+```
+
+### 4. Seed Demo Data and Train AI
+
+```bash
+pnpm db:seed
+```
+
+This runs:
+
+```bash
+tsx scripts/seed-incidents.ts
+tsx scripts/seed-runbooks.ts
+tsx scripts/train-ai-demo.ts
+```
+
+You can rerun only the AI corpus training with:
+
+```bash
+pnpm ai:train
+```
+
+### 5. Start Everything
+
 ```bash
 pnpm dev
 ```
-- Dashboard: `http://localhost:3000`
-- Backend API: `http://localhost:3001`
-- Demo App (ShopFlow): `http://localhost:3002`
 
-Or run individually:
+Local services:
+
+| Service | URL |
+| --- | --- |
+| Dashboard | `http://localhost:3000` |
+| API | `http://localhost:3001` |
+| ShopFlow Demo | `http://localhost:3002` |
+
+Individual commands:
+
 ```bash
-pnpm dev:web    # Dashboard only
-pnpm dev:api    # API only
-pnpm dev:demo   # ShopFlow victim app only
-pnpm dev:agent  # Host metrics agent only
+pnpm dev:web
+pnpm dev:api
+pnpm dev:demo
+pnpm dev:agent
 ```
 
 ---
 
-## 🎭 ShopFlow Demo App
+## Demo Script for Judges
 
-The **ShopFlow** victim app (`apps/demo`) is purpose-built for live Sentinel demos. It simulates a realistic e-commerce platform with controllable failure scenarios that map to seeded incidents.
+1. Open the dashboard at `http://localhost:3000/dashboard`.
+2. Open ShopFlow chaos panel at `http://localhost:3002/demo`.
+3. Activate `Payment Timeout`.
+4. Trigger checkout or call the payments endpoint.
+5. Watch Sentinel create or surface the incident.
+6. Open the incident detail page.
+7. Ask the AI: `What is the likely fix and what runbook should I follow?`
+8. The AI should retrieve payment timeout memory and runbook steps.
+9. Resolve the incident with root cause and resolution.
+10. Sentinel writes learnings and prepares postmortem context.
 
-| Scenario | Trigger | Sentinel Source | Seeded Incident |
-|----------|---------|-----------------|-----------------|
-| Service Down | `/api/health` returns 503 | UptimeRobot | SSL Certificate Expiry warning |
-| Payment Timeout | `/api/payments` returns 504 | sentinel-agent | API Gateway timeout on /payments |
-| Checkout JS Error | ReferenceError on checkout | Sentry | Unhandled ReferenceError in checkout flow |
-| Stripe Webhook Fail | Signature validation fails | Sentry | Stripe webhook validation failed |
-| Slow Search | 12s search latency | manual | Slow response times on Search API |
-| Gateway Overload | All APIs return 503 | sentinel-agent | Database connection pool exhausted |
+Recommended demo questions:
 
-### Demo Flow
-1. Open **Chaos Panel** at `http://localhost:3002/demo`
-2. Activate a failure scenario
-3. Interact with the Store or Checkout pages to trigger the failure
-4. Watch incidents appear in the Sentinel dashboard at `http://localhost:3000/dashboard`
-5. Use the AI co-pilot — it searches Mem0 for matching past resolutions from seed data
-6. Deactivate the scenario and verify recovery via `/api/health`
-
-### External Monitoring Setup
-```bash
-# Set DEMO_APP_URL=http://localhost:3002 in apps/api/.env
-npx tsx scripts/setup-uptimerobot.ts   # Creates UptimeRobot monitor
-npx tsx scripts/setup-sentry.ts        # Sentry webhook setup guide
+```text
+Have we seen this payment timeout before?
+What is the fastest safe mitigation?
+Which commands should the on-call engineer run?
+Is this an SLA risk?
+What should we write in the postmortem?
 ```
 
-Deploy ShopFlow to Vercel and set `DEMO_APP_URL` to your production URL for remote demos.
+---
+
+## Why This Matters
+
+Sentinel reduces the time between "something broke" and "we know what to do."
+
+For engineering teams, that means:
+
+- Lower MTTR
+- Less alert fatigue
+- Faster onboarding for new responders
+- Better reuse of incident knowledge
+- More reliable postmortems
+- Stronger operational memory over time
+
+Most incident tools store tickets. Sentinel stores learning.
 
 ---
+
+## Verification
+
+The project currently passes TypeScript checks:
+
+```bash
+pnpm typecheck
+```
+
+The AI training command has also been run successfully:
+
+```bash
+pnpm ai:train
+```
+
+---
+
+## Repository Hygiene
+
+Ignored local-only files include:
+
+- Dependency folders
+- Build output
+- Turborepo cache
+- Next.js output
+- Environment files
+- Agent runtime data
+- Test reports
+- Logs
+- Internal planning documents
+- Temporary files
+
+The AI training script is intentionally tracked because it is part of the demo and product story.
+
+---
+
+## Team Pitch
+
+Sentinel is an AI-powered incident response memory platform. It watches production signals, turns noisy alerts into one clean incident, retrieves the exact fixes that worked before, helps responders act faster, and learns from every resolution.
+
+It is not just another dashboard. It is the operational memory layer for modern engineering teams.

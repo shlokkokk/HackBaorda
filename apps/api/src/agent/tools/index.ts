@@ -6,7 +6,7 @@ import { tool } from '@langchain/core/tools';
 import { z } from 'zod';
 import { config } from '../../lib/config.js';
 import { searchMemories, writeMemory } from '../../services/mem0.js';
-import { searchSimilarIncidents, storeIncidentEmbedding } from '../../services/embeddings.js';
+import { searchSimilarIncidents, searchSimilarRunbooks, storeIncidentEmbedding } from '../../services/embeddings.js';
 import { getSLAStatus } from '../../services/sla.js';
 import { sendSlackMessage } from '../../services/slack.js';
 import { getSupabase } from '../../db/client.js';
@@ -18,14 +18,16 @@ export function createAgentTools(orgId: string, incident: Incident) {
   // ─── Tool 1: Search Memory ─────────────────────────
   const searchMemoryTool = tool(
     async ({ query, limit }) => {
-      const [memories, pgResults] = await Promise.all([
+      const [memories, pgResults, runbooks] = await Promise.all([
         searchMemories(query, orgId, limit),
         searchSimilarIncidents(query, orgId, limit),
+        searchSimilarRunbooks(query, orgId, limit),
       ]);
 
       const combined = [
         ...memories.map((m) => `[Mem0 Score: ${(m.score * 100).toFixed(0)}%] ${m.memory}`),
         ...pgResults.map((r) => `[pgvector Score: ${((r.similarity ?? 0) * 100).toFixed(0)}%] ${r.title} — Root cause: ${r.root_cause ?? 'Unknown'}, Fix: ${r.resolution ?? 'Unknown'}`),
+        ...runbooks.map((r) => `[Runbook Score: ${((r.similarity ?? 0) * 100).toFixed(0)}%] ${r.title} — Steps: ${JSON.stringify(r.steps).slice(0, 600)}`),
       ];
 
       return combined.length > 0
@@ -104,10 +106,13 @@ export function createAgentTools(orgId: string, incident: Incident) {
   const suggestFixTool = tool(
     async ({ symptoms }) => {
       const query = `${incident.title} ${symptoms.join(' ')}`;
-      const memories = await searchMemories(query, orgId, 3);
-      const pgResults = await searchSimilarIncidents(query, orgId, 3);
+      const [memories, pgResults, runbooks] = await Promise.all([
+        searchMemories(query, orgId, 3),
+        searchSimilarIncidents(query, orgId, 3),
+        searchSimilarRunbooks(query, orgId, 2),
+      ]);
 
-      if (memories.length === 0 && pgResults.length === 0) {
+      if (memories.length === 0 && pgResults.length === 0 && runbooks.length === 0) {
         return JSON.stringify({
           mode: 'manual',
           message: 'No similar past incidents found. Manual investigation recommended.',
@@ -118,7 +123,8 @@ export function createAgentTools(orgId: string, incident: Incident) {
 
       const topMemory = memories[0];
       const topPg = pgResults[0];
-      const bestScore = Math.max(topMemory?.score ?? 0, topPg?.similarity ?? 0);
+      const topRunbook = runbooks[0];
+      const bestScore = Math.max(topMemory?.score ?? 0, topPg?.similarity ?? 0, topRunbook?.similarity ?? 0);
 
       let mode: string;
       if (bestScore > 0.85) mode = 'auto_available';
@@ -126,12 +132,19 @@ export function createAgentTools(orgId: string, incident: Incident) {
       else mode = 'manual';
 
       const fix = topMemory?.metadata?.effective_fix ?? topPg?.resolution ?? 'No fix found';
-      const commands = topMemory?.metadata?.commands_used ?? [];
+      const runbookSteps = Array.isArray(topRunbook?.steps)
+        ? topRunbook.steps as Array<Record<string, unknown>>
+        : [];
+      const commands = topMemory?.metadata?.commands_used?.length
+        ? topMemory.metadata.commands_used
+        : runbookSteps
+          .map((step) => String(step['command'] ?? step['description'] ?? step['name'] ?? ''))
+          .filter(Boolean);
 
       return JSON.stringify({
         mode,
         confidence: bestScore,
-        message: `Based on ${memories.length + pgResults.length} similar incident(s)`,
+        message: `Based on ${memories.length + pgResults.length} similar incident(s) and ${runbooks.length} runbook(s)`,
         fix_description: fix,
         commands,
         steps: commands.map((cmd: string, i: number) => ({
@@ -141,6 +154,7 @@ export function createAgentTools(orgId: string, incident: Incident) {
           is_destructive: cmd.includes('delete') || cmd.includes('drop') || cmd.includes('rm'),
         })),
         source_incident: topMemory?.metadata?.incident_id ?? topPg?.id ?? null,
+        runbook_id: topRunbook?.id ?? null,
       });
     },
     {

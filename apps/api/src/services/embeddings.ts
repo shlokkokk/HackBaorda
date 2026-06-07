@@ -90,6 +90,29 @@ export async function storeIncidentEmbedding(
 }
 
 /**
+ * Store embedding for a runbook in the database.
+ */
+export async function storeRunbookEmbedding(
+  runbookId: string,
+  text: string
+): Promise<void> {
+  const embedding = await generateEmbedding(text);
+  if (!embedding) return;
+
+  const supabase = getSupabase();
+  const { error } = await supabase
+    .from('runbooks')
+    .update({ embedding })
+    .eq('id', runbookId);
+
+  if (error) {
+    log.error({ error, runbookId }, 'Failed to store runbook embedding');
+  } else {
+    log.debug({ runbookId }, 'Runbook embedding stored');
+  }
+}
+
+/**
  * Search similar incidents using pgvector.
  */
 export async function searchSimilarIncidents(
@@ -110,6 +133,41 @@ export async function searchSimilarIncidents(
 
   if (error) {
     log.error({ error, orgId }, 'pgvector search failed');
+    return [];
+  }
+
+  return data ?? [];
+}
+
+/**
+ * Search similar runbooks using pgvector.
+ */
+export async function searchSimilarRunbooks(
+  text: string,
+  orgId: string,
+  limit: number = 3
+): Promise<Array<{
+  id: string;
+  title: string;
+  incident_type: string | null;
+  steps: unknown;
+  safe_to_automate: boolean;
+  confidence_threshold: number;
+  similarity: number;
+}>> {
+  const embedding = await generateEmbedding(text);
+  if (!embedding) return [];
+
+  const supabase = getSupabase();
+  const { data, error } = await supabase.rpc('search_similar_runbooks', {
+    query_embedding: embedding,
+    match_org_id: orgId,
+    match_count: limit,
+    match_threshold: 0.25,
+  });
+
+  if (error) {
+    log.error({ error, orgId }, 'Runbook pgvector search failed');
     return [];
   }
 
