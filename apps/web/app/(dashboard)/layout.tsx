@@ -56,7 +56,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           })}
 
           <a
-            href="http://localhost:3002/demo"
+            href={`${process.env.NEXT_PUBLIC_DEMO_URL ?? 'http://localhost:3002'}/demo`}
             target="_blank"
             rel="noopener noreferrer"
             className="mt-4 flex items-center gap-2.5 rounded-lg border border-dashed border-primary/30 bg-primary/5 px-3 py-2 text-sm font-medium text-primary hover:bg-primary/10"

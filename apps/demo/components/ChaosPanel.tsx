@@ -135,7 +135,7 @@ export function ChaosPanel() {
       {sentinelMsg && (
         <div className="flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-400">
           <CheckCircle2 className="h-4 w-4" />
-          {sentinelMsg} — check <a href="http://localhost:3000/dashboard/incidents" className="underline" target="_blank" rel="noreferrer">Sentinel dashboard</a>
+          {sentinelMsg} — check <a href={`${process.env.NEXT_PUBLIC_SENTINEL_DASHBOARD_URL ?? 'http://localhost:3000'}/dashboard/incidents`} className="underline" target="_blank" rel="noreferrer">Sentinel dashboard</a>
         </div>
       )}
 

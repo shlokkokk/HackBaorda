@@ -180,10 +180,10 @@ export default function IncidentsPage() {
         <EmptyState
           icon={AlertTriangle}
           title="No incidents yet"
-          description="Trigger failures from the ShopFlow demo at localhost:3002/demo, or report one manually."
+          description="Trigger failures from the ShopFlow demo, or report one manually."
           action={
             <a
-              href="http://localhost:3002/demo"
+              href={`${process.env.NEXT_PUBLIC_DEMO_URL ?? 'http://localhost:3002'}/demo`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm font-medium text-primary hover:underline"

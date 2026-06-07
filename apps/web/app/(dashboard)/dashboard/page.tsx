@@ -84,7 +84,7 @@ export default function DashboardPage() {
           <p className="mt-1 text-sm text-muted-foreground">Live data · auto-refreshes every 10s</p>
         </div>
         <a
-          href="http://localhost:3002/demo"
+          href={`${process.env.NEXT_PUBLIC_DEMO_URL ?? 'http://localhost:3002'}/demo`}
           target="_blank"
           rel="noopener noreferrer"
           className="hidden rounded-lg border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/20 sm:block"
@@ -120,7 +120,7 @@ export default function DashboardPage() {
           {recentIncidents.length === 0 ? (
             <p className="py-8 text-center text-sm text-muted-foreground">
               No incidents yet — activate a scenario at{' '}
-              <a href="http://localhost:3002/demo" className="text-primary hover:underline">localhost:3002/demo</a>
+              <a href={`${process.env.NEXT_PUBLIC_DEMO_URL ?? 'http://localhost:3002'}/demo`} className="text-primary hover:underline">ShopFlow Demo</a>
             </p>
           ) : (
             <div className="space-y-2">
@@ -151,7 +151,7 @@ export default function DashboardPage() {
               { label: 'All Incidents', href: '/dashboard/incidents' },
               { label: 'Analytics', href: '/dashboard/analytics' },
               { label: 'Runbooks', href: '/dashboard/runbooks' },
-              { label: 'Demo Chaos Panel', href: 'http://localhost:3002/demo', external: true },
+              { label: 'Demo Chaos Panel', href: `${process.env.NEXT_PUBLIC_DEMO_URL ?? 'http://localhost:3002'}/demo`, external: true },
             ].map((a) => (
               <Link
                 key={a.label}
