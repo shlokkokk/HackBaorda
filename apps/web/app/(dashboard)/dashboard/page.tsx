@@ -13,6 +13,11 @@ import {
   Brain,
   Zap,
   ArrowUpRight,
+  Bug,
+  Globe,
+  MessageSquare,
+  Github,
+  Terminal,
 } from 'lucide-react';
 import Link from 'next/link';
 import { cn, timeAgo } from '../../../lib/utils';
@@ -228,13 +233,13 @@ export default function DashboardPage() {
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {(() => {
-            const SOURCE_INFO: Record<string, { name: string; icon: string; color: string; textColor: string }> = {
-              'sentinel-agent': { name: 'Sentinel Agent', icon: '🛡️', color: 'bg-source-agent/20', textColor: 'text-source-agent' },
-              sentry: { name: 'Sentry', icon: '🐛', color: 'bg-source-sentry/20', textColor: 'text-source-sentry' },
-              uptimerobot: { name: 'UptimeRobot', icon: '🟢', color: 'bg-source-uptimerobot/20', textColor: 'text-source-uptimerobot' },
-              slack: { name: 'Slack Bot', icon: '💬', color: 'bg-source-slack/20', textColor: 'text-source-slack' },
-              github: { name: 'GitHub', icon: '🐙', color: 'bg-muted/50', textColor: 'text-muted-foreground' },
-              manual: { name: 'Manual Form', icon: '✍️', color: 'bg-muted/50', textColor: 'text-muted-foreground' },
+            const SOURCE_INFO: Record<string, { name: string; icon: React.ComponentType<{ className?: string }>; color: string; textColor: string }> = {
+              'sentinel-agent': { name: 'Sentinel Agent', icon: Shield, color: 'bg-source-agent/20', textColor: 'text-source-agent' },
+              sentry: { name: 'Sentry', icon: Bug, color: 'bg-source-sentry/20', textColor: 'text-source-sentry' },
+              uptimerobot: { name: 'UptimeRobot', icon: Globe, color: 'bg-source-uptimerobot/20', textColor: 'text-source-uptimerobot' },
+              slack: { name: 'Slack Bot', icon: MessageSquare, color: 'bg-source-slack/20', textColor: 'text-source-slack' },
+              github: { name: 'GitHub', icon: Github, color: 'bg-muted/50', textColor: 'text-muted-foreground' },
+              manual: { name: 'Manual Form', icon: Terminal, color: 'bg-muted/50', textColor: 'text-muted-foreground' },
             };
 
             const defaultHealth: IngestionHealth[] = [
@@ -265,7 +270,8 @@ export default function DashboardPage() {
 
             return defaultHealth.map((def) => {
               const current = ingestionHealth.find((h) => h.source === def.source) || def;
-              const info = SOURCE_INFO[current.source] ?? SOURCE_INFO.manual ?? { name: 'Manual Form', icon: '✍️', color: 'bg-muted/50', textColor: 'text-muted-foreground' };
+              const info = SOURCE_INFO[current.source] ?? SOURCE_INFO.manual ?? { name: 'Manual Form', icon: Terminal, color: 'bg-muted/50', textColor: 'text-muted-foreground' };
+              const IconComponent = info.icon;
 
               return (
                 <div
@@ -275,7 +281,7 @@ export default function DashboardPage() {
                     info.color
                   )}
                 >
-                  <span className="text-xl">{info.icon}</span>
+                  <IconComponent className={cn("w-6 h-6", info.textColor)} />
                   <span className="text-xs font-medium text-center">{info.name}</span>
                   <div className="flex items-center gap-1.5">
                     <div className={cn('w-1.5 h-1.5 rounded-full animate-pulse', statusColors[current.status] || 'bg-muted')} />
