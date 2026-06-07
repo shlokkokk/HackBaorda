@@ -9,8 +9,28 @@ import { cn, timeAgo, formatDate } from '../../../../../lib/utils';
 import {
   ArrowLeft, Send, Bot, User, Clock,
   Brain, Loader2,
+  AlertCircle, Search, Wrench, CheckCircle2, BookOpen,
+  Shield, Bug, Globe, MessageSquare, Github, Terminal
 } from 'lucide-react';
 import Link from 'next/link';
+import ReactMarkdown from 'react-markdown';
+
+const STATUS_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  open: AlertCircle,
+  investigating: Search,
+  mitigating: Wrench,
+  resolved: CheckCircle2,
+  postmortem: BookOpen,
+};
+
+const SOURCE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  'sentinel-agent': Shield,
+  sentry: Bug,
+  uptimerobot: Globe,
+  slack: MessageSquare,
+  github: Github,
+  manual: Terminal,
+};
 import { SEVERITY_CONFIG, STATUS_CONFIG, SOURCE_CONFIG, STATUS_TRANSITIONS } from '@sentinel/shared';
 import type { Incident, IncidentStatus, AgentInteraction } from '@sentinel/shared';
 
@@ -149,15 +169,31 @@ export default function IncidentDetailPage() {
           <ArrowLeft className="w-5 h-5" />
         </Link>
         <div className="flex-1">
-          <div className="flex items-center gap-3 mb-2">
-            <span className="px-2.5 py-1 rounded-md text-xs font-bold" style={{ backgroundColor: sevConfig.bgColor, color: sevConfig.textColor }}>
+          <div className="flex items-center flex-wrap gap-2.5 mb-3">
+            <span 
+              className="px-3 py-1 rounded-full text-xs font-bold border" 
+              style={{ backgroundColor: sevConfig.bgColor, color: sevConfig.textColor, borderColor: 'currentColor' }}
+            >
               {incident.severity}
             </span>
-            <span className="px-2.5 py-1 rounded-md text-xs font-medium" style={{ backgroundColor: statusConfig.bgColor, color: statusConfig.textColor }}>
-              {statusConfig.icon} {statusConfig.label}
+            <span 
+              className="px-3 py-1 rounded-full text-xs font-medium border flex items-center gap-1.5" 
+              style={{ backgroundColor: statusConfig.bgColor, color: statusConfig.textColor, borderColor: 'currentColor' }}
+            >
+              {(() => {
+                const StatusIcon = STATUS_ICONS[incident.status] || AlertCircle;
+                return <StatusIcon className="w-3.5 h-3.5" />;
+              })()}
+              {statusConfig.label}
             </span>
-            <span className="text-xs text-muted-foreground flex items-center gap-1">
-              {sourceConfig.icon} {sourceConfig.label}
+            <span 
+              className="px-3 py-1 rounded-full text-xs font-medium border border-border/60 bg-muted/30 text-muted-foreground flex items-center gap-1.5"
+            >
+              {(() => {
+                const SourceIcon = SOURCE_ICONS[incident.source] || Terminal;
+                return <SourceIcon className="w-3.5 h-3.5" />;
+              })()}
+              {sourceConfig.label}
             </span>
           </div>
           <h1 className="text-2xl font-bold">{incident.title}</h1>
@@ -251,8 +287,29 @@ export default function IncidentDetailPage() {
                       <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
                         <Bot className="w-4 h-4 text-primary" />
                       </div>
-                      <div className="max-w-[80%] px-4 py-2.5 rounded-xl rounded-tl-sm bg-muted/50 text-sm whitespace-pre-wrap">
-                        {interaction.response}
+                      <div className="max-w-[80%] px-4 py-2.5 rounded-xl rounded-tl-sm bg-muted/50 text-sm">
+                        <div className="prose prose-sm dark:prose-invert max-w-none">
+                          <ReactMarkdown
+                            components={{
+                              h1: ({ node, ...props }) => <h1 className="text-base font-extrabold text-foreground mt-4 mb-2" {...props} />,
+                              h2: ({ node, ...props }) => <h2 className="text-sm font-bold text-foreground mt-3 mb-1.5" {...props} />,
+                              h3: ({ node, ...props }) => <h3 className="text-xs font-semibold text-foreground mt-2 mb-1" {...props} />,
+                              p: ({ node, ...props }) => <p className="text-sm text-muted-foreground leading-relaxed mb-2" {...props} />,
+                              ul: ({ node, ...props }) => <ul className="list-disc list-inside space-y-1 my-2 text-sm text-muted-foreground ml-3" {...props} />,
+                              ol: ({ node, ...props }) => <ol className="list-decimal list-inside space-y-1 my-2 text-sm text-muted-foreground ml-3" {...props} />,
+                              li: ({ node, ...props }) => <li className="mb-0.5" {...props} />,
+                              code: ({ node, ...props }) => (
+                                <code className="px-1.5 py-0.5 rounded bg-muted font-mono text-xs text-primary" {...props} />
+                              ),
+                              pre: ({ node, ...props }) => (
+                                <pre className="p-3 my-2 rounded-lg bg-black/40 border border-border/40 font-mono text-xs overflow-x-auto text-primary-foreground leading-relaxed" {...props} />
+                              ),
+                              strong: ({ node, ...props }) => <strong className="font-bold text-foreground" {...props} />,
+                            }}
+                          >
+                            {interaction.response}
+                          </ReactMarkdown>
+                        </div>
                         {interaction.tools_used.length > 0 && (
                           <div className="mt-2 flex flex-wrap gap-1">
                             {interaction.tools_used.map((tool) => (

@@ -193,7 +193,7 @@ export default function OnCallPage() {
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <h3 className="text-sm font-bold text-foreground">{user.name}</h3>
+                    <h3 className="text-sm font-bold text-foreground">{user.name ?? 'Unnamed Responder'}</h3>
                     <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                     <span className="inline-block mt-2 px-2 py-0.5 rounded text-[10px] bg-primary/10 text-primary font-mono uppercase font-bold">
                       {user.role}
@@ -201,7 +201,7 @@ export default function OnCallPage() {
                   </div>
 
                   <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center font-bold text-xs shrink-0 select-none">
-                    {user.name.substring(0, 2).toUpperCase()}
+                    {(user.name ?? user.email ?? 'US').substring(0, 2).toUpperCase()}
                   </div>
                 </div>
 
