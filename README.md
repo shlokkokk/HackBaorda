@@ -151,6 +151,7 @@ Set up tables, vector indexes, and seed realistic demo incident/runbook data:
 ```bash
 pnpm db:setup     # Verifies connection
 pnpm db:seed      # Seeds 10 incidents & 5 runbooks into Supabase
+pnpm setup:agent  # Auto-configures sentinel-agent ORG_ID from database
 ```
 > Mem0 memories are written automatically when incidents are resolved via the event listener — not during seed.
 

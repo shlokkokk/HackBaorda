@@ -17,8 +17,10 @@ export function createAgentTools(orgId: string, incident: Incident) {
   // ─── Tool 1: Search Memory ─────────────────────────
   const searchMemoryTool = tool(
     async ({ query, limit }) => {
-      const memories = await searchMemories(query, orgId, limit);
-      const pgResults = await searchSimilarIncidents(query, orgId, limit);
+      const [memories, pgResults] = await Promise.all([
+        searchMemories(query, orgId, limit),
+        searchSimilarIncidents(query, orgId, limit),
+      ]);
 
       const combined = [
         ...memories.map((m) => `[Mem0 Score: ${(m.score * 100).toFixed(0)}%] ${m.memory}`),

@@ -4,7 +4,7 @@
 
 import { getSupabase } from '../db/client.js';
 import { logger } from '../lib/logger.js';
-import { INGESTION_STALENESS, ALL_SOURCES } from '@sentinel/shared';
+import { INGESTION_STALENESS, ALL_SOURCES, isValidOrgId } from '@sentinel/shared';
 import type { IncidentSource, IngestionHealth } from '@sentinel/shared';
 
 const log = logger.child({ service: 'ingestion-health' });
@@ -18,6 +18,11 @@ export async function recordSourcePing(
   source: IncidentSource,
   isIncident: boolean = false
 ): Promise<void> {
+  if (!isValidOrgId(orgId)) {
+    log.warn({ orgId, source }, 'Skipping source ping — invalid org_id');
+    return;
+  }
+
   const supabase = getSupabase();
 
   const updates: Record<string, unknown> = {

@@ -1,12 +1,15 @@
 // ═══════════════════════════════════════════════════════════
-// Agent Orchestrator — LangChain.js ReAct Agent with Groq
+// Agent Orchestrator — Fast Groq responses with parallel prefetch
 // ═══════════════════════════════════════════════════════════
 
 import { ChatGroq } from '@langchain/groq';
+import { HumanMessage, SystemMessage } from '@langchain/core/messages';
 import { config } from '../lib/config.js';
 import { logger } from '../lib/logger.js';
 import { getSupabase } from '../db/client.js';
-import { createAgentTools } from './tools/index.js';
+import { searchMemories } from '../services/mem0.js';
+import { searchSimilarIncidents } from '../services/embeddings.js';
+import { getSLAStatus } from '../services/sla.js';
 import { SYSTEM_PROMPT } from './prompts/system.js';
 import type { AgentResponse, Incident, MemoryResult } from '@sentinel/shared';
 
@@ -18,18 +21,69 @@ function getLLM(): ChatGroq {
   if (!llm) {
     llm = new ChatGroq({
       apiKey: config.groq.apiKey,
-      modelName: config.groq.model,
-      temperature: 0.3,
-      maxTokens: 4096,
+      model: config.groq.model,
+      temperature: 0.2,
+      maxTokens: 1024,
     });
     log.info({ model: config.groq.model }, 'Groq LLM initialized');
   }
   return llm;
 }
 
+function extractTextContent(content: unknown): string {
+  if (typeof content === 'string') return content.trim();
+  if (Array.isArray(content)) {
+    return content
+      .map((part) => {
+        if (typeof part === 'string') return part;
+        if (part && typeof part === 'object' && 'text' in part) {
+          return String((part as { text: string }).text);
+        }
+        return '';
+      })
+      .join('')
+      .trim();
+  }
+  return '';
+}
+
+function formatMemoryContext(
+  memories: MemoryResult[],
+  pgResults: Awaited<ReturnType<typeof searchSimilarIncidents>>
+): string {
+  const lines: string[] = [];
+
+  for (const m of memories) {
+    lines.push(`- [Mem0 ${(m.score * 100).toFixed(0)}%] ${m.memory}`);
+  }
+  for (const r of pgResults) {
+    lines.push(
+      `- [Past incident ${((r.similarity ?? 0) * 100).toFixed(0)}%] ${r.title} | Root: ${r.root_cause ?? 'unknown'} | Fix: ${r.resolution ?? 'unknown'}`
+    );
+  }
+
+  return lines.length > 0 ? lines.join('\n') : 'No similar past incidents in memory yet.';
+}
+
+function buildSystemPrompt(incident: Incident, memoryBlock: string, slaBlock: string): string {
+  return (
+    SYSTEM_PROMPT.replace('{{INCIDENT_ID}}', incident.id)
+      .replace('{{INCIDENT_TITLE}}', incident.title)
+      .replace('{{INCIDENT_DESCRIPTION}}', incident.description ?? 'No description')
+      .replace('{{INCIDENT_SEVERITY}}', incident.severity)
+      .replace('{{INCIDENT_STATUS}}', incident.status)
+      .replace('{{INCIDENT_SOURCE}}', incident.source)
+      .replace('{{AFFECTED_SERVICES}}', incident.affected_services.join(', ') || 'Unknown')
+      .replace('{{CREATED_AT}}', incident.created_at) +
+    `\n\n## Pre-loaded Context (already fetched — answer directly, do NOT request more data)\n` +
+    `### Similar past incidents\n${memoryBlock}\n\n` +
+    `### SLA status\n${slaBlock}\n\n` +
+    `Respond in under 200 words unless the user asks for detail. Be specific and actionable.`
+  );
+}
+
 /**
- * Run the agent for a given incident and query.
- * This is the main entry point for agent interactions.
+ * Run the agent — one Groq call with memory/SLA prefetched in parallel (~3-8s total).
  */
 export async function runAgent(
   incident: Incident,
@@ -37,73 +91,68 @@ export async function runAgent(
   orgId: string
 ): Promise<AgentResponse> {
   const startTime = Date.now();
-  log.info({ incidentId: incident.id, query: query.substring(0, 100) }, 'Agent invoked');
+  log.info({ incidentId: incident.id, query: query.substring(0, 80) }, 'Agent invoked');
 
   try {
+    const searchQuery = `${incident.title} ${query}`;
+
+    const prefetchStart = Date.now();
+    const [memories, pgResults] = await Promise.all([
+      searchMemories(searchQuery, orgId, 3),
+      searchSimilarIncidents(searchQuery, orgId, 3),
+    ]);
+    log.debug({ prefetchMs: Date.now() - prefetchStart }, 'Memory prefetch done');
+
+    const slaBlock = incident.sla_breach_at
+      ? JSON.stringify(getSLAStatus(new Date(incident.sla_breach_at)))
+      : 'No SLA deadline set';
+
+    const memoryBlock = formatMemoryContext(memories, pgResults);
+    const systemText = buildSystemPrompt(incident, memoryBlock, slaBlock);
+
+    const groqStart = Date.now();
     const model = getLLM();
-    const tools = createAgentTools(orgId, incident);
+    const response = await model.invoke([
+      new SystemMessage(systemText),
+      new HumanMessage(query),
+    ]);
+    log.debug({ groqMs: Date.now() - groqStart }, 'Groq response received');
 
-    // Build the context-rich prompt
-    const systemMessage = SYSTEM_PROMPT
-      .replace('{{INCIDENT_ID}}', incident.id)
-      .replace('{{INCIDENT_TITLE}}', incident.title)
-      .replace('{{INCIDENT_DESCRIPTION}}', incident.description ?? 'No description')
-      .replace('{{INCIDENT_SEVERITY}}', incident.severity)
-      .replace('{{INCIDENT_STATUS}}', incident.status)
-      .replace('{{INCIDENT_SOURCE}}', incident.source)
-      .replace('{{AFFECTED_SERVICES}}', incident.affected_services.join(', ') || 'Unknown')
-      .replace('{{CREATED_AT}}', incident.created_at);
+    const responseText =
+      extractTextContent(response.content) ||
+      'I could not generate a response. Please try a shorter question.';
 
-    // Use the model with tools directly (Groq supports tool calling)
-    const modelWithTools = model.bindTools(tools);
+    const toolsUsed = memories.length > 0 || pgResults.length > 0 ? ['search_memory'] : [];
 
-    const messages = [
-      { role: 'system' as const, content: systemMessage },
-      { role: 'user' as const, content: query },
-    ];
-
-    const response = await modelWithTools.invoke(messages);
-
-    const toolsUsed: string[] = [];
-    const memoriesRetrieved: MemoryResult[] = [];
-
-    // Extract response content
-    const responseText = typeof response.content === 'string'
-      ? response.content
-      : JSON.stringify(response.content);
-
-    // Log the interaction to DB
-    const supabase = getSupabase();
-    await supabase
+    // Log interaction without blocking the HTTP response
+    void getSupabase()
       .from('agent_interactions')
       .insert({
         incident_id: incident.id,
         query,
         response: responseText,
         tools_used: toolsUsed,
-        memories_retrieved: memoriesRetrieved,
+        memories_retrieved: memories,
+      })
+      .then(({ error }) => {
+        if (error) log.warn({ error }, 'Failed to log agent interaction');
       });
 
     const duration = Date.now() - startTime;
-    log.info({
-      incidentId: incident.id,
-      toolsUsed,
-      duration: `${duration}ms`,
-    }, 'Agent response generated');
+    log.info({ incidentId: incident.id, duration: `${duration}ms`, toolsUsed }, 'Agent done');
 
     return {
       response: responseText,
       tools_used: toolsUsed,
-      memories_retrieved: memoriesRetrieved,
+      memories_retrieved: memories,
       suggested_severity: null,
       suggested_fix: null,
     };
   } catch (err) {
     log.error({ err, incidentId: incident.id }, 'Agent execution failed');
-
-    // Fallback response
+    const errMsg = err instanceof Error ? err.message : 'Unknown error';
     return {
-      response: `I encountered an error analyzing this incident. Here's what I know:\n\n**Incident:** ${incident.title}\n**Severity:** ${incident.severity}\n**Source:** ${incident.source}\n\nPlease investigate manually and I'll learn from the resolution.`,
+      response: `**Agent error:** ${errMsg}\n\nCheck that \`GROQ_API_KEY\` is valid in \`apps/api/.env\` and restart the API.`,
       tools_used: [],
       memories_retrieved: [],
       suggested_severity: null,
@@ -113,34 +162,27 @@ export async function runAgent(
 }
 
 /**
- * Auto-trigger agent when a new incident is created.
+ * Auto-triage on new incidents — runs in background, uses same fast path.
  */
 export async function autoTriageIncident(incident: Incident, orgId: string): Promise<void> {
   log.info({ incidentId: incident.id }, 'Auto-triaging new incident');
 
-  const query = `A new ${incident.severity} incident has been reported: "${incident.title}". 
-Source: ${incident.source}. 
-Affected services: ${incident.affected_services.join(', ') || 'Unknown'}.
-Description: ${incident.description ?? 'No description provided.'}
-
-Please:
-1. Search memory for similar past incidents
-2. Score the severity based on impact analysis
-3. Suggest a fix if similar incidents have been resolved before
-4. Check the SLA status
-5. Provide a concise triage response`;
+  const query = `New ${incident.severity} incident from ${incident.source}: "${incident.title}".
+Affected: ${incident.affected_services.join(', ') || 'unknown'}.
+Give a 3-bullet triage: similar past incidents, recommended fix, SLA urgency.`;
 
   const response = await runAgent(incident, query, orgId);
 
-  // If Slack is configured, post the response
-  const { sendIncidentSlackAlert } = await import('../services/slack.js');
-  // Use a default channel or the org's configured channel
-  const slackTs = await sendIncidentSlackAlert('incidents', incident, response.response);
-  if (slackTs) {
-    const supabase = getSupabase();
-    await supabase
-      .from('incidents')
-      .update({ slack_thread_ts: slackTs })
-      .eq('id', incident.id);
+  try {
+    const { sendIncidentSlackAlert } = await import('../services/slack.js');
+    const slackTs = await sendIncidentSlackAlert('incidents', incident, response.response);
+    if (slackTs) {
+      await getSupabase()
+        .from('incidents')
+        .update({ slack_thread_ts: slackTs })
+        .eq('id', incident.id);
+    }
+  } catch (err) {
+    log.warn({ err }, 'Slack alert during auto-triage failed (non-fatal)');
   }
 }

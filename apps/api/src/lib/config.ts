@@ -40,7 +40,7 @@ export const config = {
   // AI / LLM
   groq: {
     apiKey: requireEnv('GROQ_API_KEY'),
-    model: optionalEnv('GROQ_MODEL', 'qwen/qwen3-32b'),
+    model: optionalEnv('GROQ_MODEL', 'llama-3.1-8b-instant'),
   },
 
   // Memory

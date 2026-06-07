@@ -10,6 +10,7 @@ import { recordSourcePing } from '../../services/ingestionHealth.js';
 import { calculateBreachAt, getOrgSLAConfig } from '../../services/sla.js';
 import { eventBus } from '../../services/events.js';
 import type { GitHubIssuePayload, Incident } from '@sentinel/shared';
+import { validateOrgIdForIngestion } from '../../lib/orgValidation.js';
 
 const log = logger.child({ source: 'github' });
 
@@ -18,11 +19,13 @@ export async function handleGitHubWebhook(
   req: Request,
   res: Response
 ): Promise<void> {
-  const orgId = (req.query['org_id'] as string) ?? req.headers['x-org-id'] as string;
-  if (!orgId) {
-    res.status(400).json({ error: 'org_id required' });
+  const rawOrgId = (req.query['org_id'] as string) ?? (req.headers['x-org-id'] as string);
+  const orgCheck = await validateOrgIdForIngestion(rawOrgId);
+  if (!orgCheck.ok) {
+    res.status(orgCheck.status).json({ error: orgCheck.error });
     return;
   }
+  const orgId = orgCheck.orgId;
 
   // Only process opened issues with incident/outage labels
   if (payload.action !== 'opened' && payload.action !== 'labeled') {

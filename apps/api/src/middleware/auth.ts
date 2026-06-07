@@ -7,7 +7,7 @@ import { verifyToken } from '@clerk/backend';
 import { config } from '../lib/config.js';
 import { logger } from '../lib/logger.js';
 import { AppError } from './errorHandler.js';
-import { getSupabase } from '../db/client.js';
+import { ensureUserProvisioned } from '../services/userBootstrap.js';
 
 /**
  * Verify Clerk JWT and attach user info to request.
@@ -42,19 +42,11 @@ export async function authMiddleware(
 
     req.userId = verifiedToken.sub;
 
-    // Look up user's org from DB
-    const supabase = getSupabase();
-    const { data: user } = await supabase
-      .from('users')
-      .select('org_id')
-      .eq('id', verifiedToken.sub)
-      .single();
+    // Auto-provision user + org (Clerk webhooks often don't reach localhost)
+    const orgId = await ensureUserProvisioned(verifiedToken.sub);
+    req.orgId = orgId;
 
-    if (user?.org_id) {
-      req.orgId = user.org_id;
-    }
-
-    // Also check X-Org-Id header (for multi-org support)
+    // X-Org-Id header overrides for multi-org (advanced)
     if (req.headers['x-org-id']) {
       req.orgId = req.headers['x-org-id'] as string;
     }

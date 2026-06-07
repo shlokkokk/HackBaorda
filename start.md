@@ -45,12 +45,12 @@ Clerk handles user authentication and communicates automatically with our databa
 Now that your organization is registered in the database, we can seed the test data.
 1. Go to your **Supabase Table Editor** and click on the **`orgs`** table.
 2. Copy the **`id`** value (which is a UUID string).
-3. Open the file **[sentinel-agent/.env](file:///c:/Users/Admin/OneDrive/projects/HackBaroda/sentinel-agent/.env)**:
-   * Replace `your_org_uuid_here_get_from_db` with the UUID you just copied:
-     ```env
-     ORG_ID=your-supabase-org-uuid
-     ```
-   * Save the file.
+3. Auto-configure the host agent (recommended):
+   ```bash
+   pnpm setup:agent
+   ```
+   This writes the correct `ORG_ID` and syncs `WEBHOOK_SECRET` into `sentinel-agent/.env`.
+   *Alternatively*, manually copy the org UUID from Supabase into `sentinel-agent/.env` as `ORG_ID=...`.
 4. In a new terminal window in the project root, run the seeding script:
    ```bash
    pnpm db:seed

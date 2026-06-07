@@ -1,5 +1,6 @@
 import * as dotenv from 'dotenv';
 import * as os from 'os';
+import { isValidOrgId, orgIdValidationError } from '@sentinel/shared';
 
 dotenv.config();
 
@@ -26,11 +27,22 @@ export const config = {
 
 // Validate required config
 export function validateConfig() {
-  if (!config.orgId) {
-    console.error('❌ ORG_ID is required in agent environment configuration.');
+  const orgError = orgIdValidationError(config.orgId);
+  if (orgError) {
+    console.error(`❌ ${orgError}`);
+    console.error('');
+    console.error('   Fix: run from project root →  pnpm setup:agent');
+    console.error('   Then restart:              pnpm dev');
     process.exit(1);
   }
+
+  if (!isValidOrgId(config.orgId)) {
+    console.error('❌ ORG_ID failed validation.');
+    process.exit(1);
+  }
+
   if (!config.webhookSecret) {
     console.warn('⚠️ WEBHOOK_SECRET is empty. Signature verification might fail on backend.');
+    console.warn('   Copy WEBHOOK_SECRET from apps/api/.env into sentinel-agent/.env');
   }
 }

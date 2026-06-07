@@ -11,6 +11,7 @@ import { calculateBreachAt, getOrgSLAConfig } from '../../services/sla.js';
 import { recordSourcePing } from '../../services/ingestionHealth.js';
 import { eventBus } from '../../services/events.js';
 import type { Incident, UptimeRobotPayload } from '@sentinel/shared';
+import { validateOrgIdForIngestion } from '../../lib/orgValidation.js';
 
 const log = logger.child({ source: 'uptimerobot' });
 
@@ -21,12 +22,13 @@ export async function handleUptimeRobotWebhook(
 ): Promise<void> {
   log.info({ monitorId: payload.monitorID, alertType: payload.alertTypeFriendlyName }, 'UptimeRobot webhook received');
 
-  // Get org_id from query param or header
-  const orgId = (req.query['org_id'] as string) ?? req.headers['x-org-id'] as string;
-  if (!orgId) {
-    res.status(400).json({ error: 'org_id required' });
+  const rawOrgId = (req.query['org_id'] as string) ?? (req.headers['x-org-id'] as string);
+  const orgCheck = await validateOrgIdForIngestion(rawOrgId);
+  if (!orgCheck.ok) {
+    res.status(orgCheck.status).json({ error: orgCheck.error });
     return;
   }
+  const orgId = orgCheck.orgId;
 
   // Record ping
   await recordSourcePing(orgId, 'uptimerobot', true);

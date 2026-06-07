@@ -5,7 +5,10 @@
 import MemoryClient from 'mem0ai';
 import { config } from '../lib/config.js';
 import { logger } from '../lib/logger.js';
+import { withTimeout } from '../lib/timeout.js';
 import type { MemoryResult, MemoryMetadata } from '@sentinel/shared';
+
+const MEM0_TIMEOUT_MS = 4_000;
 
 const log = logger.child({ service: 'mem0' });
 
@@ -29,10 +32,11 @@ export async function searchMemories(
 ): Promise<MemoryResult[]> {
   try {
     const client = getMem0();
-    const results = await client.search(query, {
-      user_id: `org_${orgId}`,
-      limit,
-    });
+    const results = await withTimeout(
+      client.search(query, { user_id: `org_${orgId}`, limit }),
+      MEM0_TIMEOUT_MS,
+      []
+    );
 
     return ((results ?? []) as any[]).map((r) => ({
       id: String(r['id'] ?? ''),

@@ -14,4 +14,5 @@ export * from './constants/status';
 export * from './constants/sources';
 export * from './constants/sla';
 export * from './utils/fingerprint';
+export * from './utils/uuid';
 export * from './utils/validation';

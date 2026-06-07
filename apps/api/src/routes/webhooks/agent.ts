@@ -11,6 +11,7 @@ import { calculateBreachAt, getOrgSLAConfig } from '../../services/sla.js';
 import { recordSourcePing } from '../../services/ingestionHealth.js';
 import { eventBus } from '../../services/events.js';
 import type { Incident, SentinelAgentAlertPayload, SentinelAgentHeartbeatPayload, Severity } from '@sentinel/shared';
+import { validateOrgIdForIngestion } from '../../lib/orgValidation.js';
 
 const log = logger.child({ source: 'sentinel-agent' });
 
@@ -19,11 +20,13 @@ export async function handleAgentWebhook(
   _req: Request,
   res: Response
 ): Promise<void> {
-  const orgId = payload.org_id;
-  if (!orgId) {
-    res.status(400).json({ error: 'org_id required in payload' });
+  const orgCheck = await validateOrgIdForIngestion(payload.org_id);
+  if (!orgCheck.ok) {
+    log.warn({ orgId: payload.org_id, error: orgCheck.error }, 'Invalid org_id in agent webhook');
+    res.status(orgCheck.status).json({ error: orgCheck.error });
     return;
   }
+  const orgId = orgCheck.orgId;
 
   // ─── HEARTBEAT ─────────────────────────────────────
   if (payload.type === 'heartbeat') {
@@ -138,8 +141,13 @@ export async function handleAgentWebhook(
     .single();
 
   if (error || !data) {
-    log.error({ error }, 'Failed to create incident from agent');
-    res.status(500).json({ error: 'Failed to create incident' });
+    log.error({ error, orgId }, 'Failed to create incident from agent');
+    const isUuidError = error?.code === '22P02';
+    res.status(isUuidError ? 400 : 500).json({
+      error: isUuidError
+        ? `Invalid org_id "${orgId}". Run: pnpm setup:agent`
+        : 'Failed to create incident',
+    });
     return;
   }
 

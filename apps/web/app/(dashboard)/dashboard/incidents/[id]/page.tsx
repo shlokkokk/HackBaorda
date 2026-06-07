@@ -87,8 +87,24 @@ export default function IncidentDetailPage() {
         const withoutTemp = prev.filter((i) => i.id !== userInteraction.id);
         return [...withoutTemp, agentInteraction];
       });
-    } catch {
-      setAgentResponse('I encountered an error processing your request. Please try again.');
+    } catch (err) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : 'Could not reach Sentinel API. Is the backend running on port 3001?';
+      const errorInteraction: AgentInteraction = {
+        id: `err-${Date.now()}`,
+        incident_id: incident.id,
+        query: q,
+        response: `⚠️ **Agent error:** ${message}\n\nIf this says "Organization ID required", sign out and back in, or run \`pnpm setup:agent\` then restart \`pnpm dev\`.`,
+        tools_used: [],
+        memories_retrieved: [],
+        created_at: new Date().toISOString(),
+      };
+      setInteractions((prev) => {
+        const withoutTemp = prev.filter((i) => i.id !== userInteraction.id);
+        return [...withoutTemp, errorInteraction];
+      });
     }
     setAgentLoading(false);
   }
@@ -270,7 +286,7 @@ export default function IncidentDetailPage() {
                   <div className="px-4 py-3 rounded-xl rounded-tl-sm bg-muted/50">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Searching memory & analyzing...</span>
+                      <span>Querying Groq (usually 3–10s)...</span>
                     </div>
                   </div>
                 </div>
