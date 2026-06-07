@@ -820,3 +820,13 @@ See TODO.md for exact steps.
 12. **Deduplication engine** — prevents alert fatigue from multiple sources detecting same incident
 13. **Ingestion health monitoring** — enterprise-grade observability of the observability tool itself
 14. **Source redundancy** — if one auto-source fails, others continue; manual always available
+
+
+##things to add 
+No verify_fix tool	After auto-fix, how does agent know it worked?	Add Tool 10: verify_fix — checks service health endpoint
+No runbook execution framework	"Apply Fix" button has no backend logic	Add mock executor with audit trail (show command, simulate output)
+Webhook auth not specified per-source	UptimeRobot, Sentry, Slack use different signature methods	Add: UptimeRobot = no sig (IP whitelist), Sentry = HMAC, Slack = signature
+No severity auto-escalation	If incident affects more services, severity bumps automatically	Static severity. Add note about auto-bump logic
+No postmortem review workflow	Real tools require approval before publishing	Auto-generated only. Add "review status" field
+Analytics too basic	Heatmaps, time-to-detection trends, source reliability scores	MTTR + count only. Add source reliability chart
+also read agentic add md file fully too its jus a top tier addition too for this but i forgot to add it at first yeh so we jus gotta make this top tier fully profesional indutry make like wining hackathon isnt even a conecern its a side thing for it our main is like making it so so good winning is obvious but also a top tier indutrsy level startup too
