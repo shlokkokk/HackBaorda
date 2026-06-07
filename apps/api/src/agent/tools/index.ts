@@ -4,6 +4,7 @@
 
 import { tool } from '@langchain/core/tools';
 import { z } from 'zod';
+import { config } from '../../lib/config.js';
 import { searchMemories, writeMemory } from '../../services/mem0.js';
 import { searchSimilarIncidents, storeIncidentEmbedding } from '../../services/embeddings.js';
 import { getSLAStatus } from '../../services/sla.js';
@@ -233,7 +234,7 @@ export function createAgentTools(orgId: string, incident: Incident) {
       name: 'notify_slack',
       description: 'Send a notification message to a Slack channel.',
       schema: z.object({
-        channel: z.string().default('incidents'),
+        channel: z.string().default(config.slack.channel),
         message: z.string().describe('Message to send'),
       }),
     }

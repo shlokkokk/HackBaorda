@@ -40,6 +40,10 @@ export async function sendSlackMessage(
 
     const data = await response.json() as { ok: boolean; error?: string; ts?: string };
     if (!data.ok) {
+      if (data.error === 'channel_not_found' && channel !== 'general' && channel !== '#general') {
+        log.warn({ channel }, 'Slack channel not found, falling back to general');
+        return sendSlackMessage('general', text, blocks, threadTs);
+      }
       log.error({ error: data.error, channel }, 'Slack message failed');
       return null;
     }

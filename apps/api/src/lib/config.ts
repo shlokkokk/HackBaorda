@@ -58,6 +58,7 @@ export const config = {
     botToken: optionalEnv('SLACK_BOT_TOKEN', ''),
     signingSecret: optionalEnv('SLACK_SIGNING_SECRET', ''),
     appToken: optionalEnv('SLACK_APP_TOKEN', ''),
+    channel: optionalEnv('SLACK_CHANNEL', 'incidents'),
   },
 
   // Email

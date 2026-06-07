@@ -142,7 +142,7 @@ export async function runEscalationCycle(): Promise<void> {
 
         // Notify Slack
         try {
-          const slackChannel = 'incidents';
+          const slackChannel = config.slack.channel;
           const slackText = `🚨 *Incident Auto-Escalated*\n*Incident:* <${config.appUrl}/dashboard/incidents/${inc.id}|${inc.title}>\n*Status:* Escalated from *${inc.severity}* to *${targetSeverity}*\n*Reason:* ${reason}`;
           
           await sendSlackMessage(

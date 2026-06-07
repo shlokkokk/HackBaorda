@@ -175,7 +175,7 @@ Give a 3-bullet triage: similar past incidents, recommended fix, SLA urgency.`;
 
   try {
     const { sendIncidentSlackAlert } = await import('../services/slack.js');
-    const slackTs = await sendIncidentSlackAlert('incidents', incident, response.response);
+    const slackTs = await sendIncidentSlackAlert(config.slack.channel, incident, response.response);
     if (slackTs) {
       await getSupabase()
         .from('incidents')
