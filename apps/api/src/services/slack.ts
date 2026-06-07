@@ -17,10 +17,10 @@ export async function sendSlackMessage(
   text: string,
   blocks?: Record<string, unknown>[],
   threadTs?: string
-): Promise<boolean> {
+): Promise<string | null> {
   if (!config.slack.botToken) {
     log.warn('Slack not configured — skipping message');
-    return false;
+    return null;
   }
 
   try {
@@ -38,17 +38,17 @@ export async function sendSlackMessage(
       }),
     });
 
-    const data = await response.json() as { ok: boolean; error?: string };
+    const data = await response.json() as { ok: boolean; error?: string; ts?: string };
     if (!data.ok) {
       log.error({ error: data.error, channel }, 'Slack message failed');
-      return false;
+      return null;
     }
 
-    log.info({ channel }, 'Slack message sent');
-    return true;
+    log.info({ channel, ts: data.ts }, 'Slack message sent');
+    return data.ts ?? null;
   } catch (err) {
     log.error({ err, channel }, 'Failed to send Slack message');
-    return false;
+    return null;
   }
 }
 
@@ -59,7 +59,7 @@ export async function sendIncidentSlackAlert(
   channel: string,
   incident: Incident,
   agentResponse?: string
-): Promise<boolean> {
+): Promise<string | null> {
   const severity = SEVERITY_CONFIG[incident.severity];
   const source = SOURCE_CONFIG[incident.source];
 
@@ -111,7 +111,7 @@ export async function sendIncidentSlackAlert(
         {
           type: 'button',
           text: { type: 'plain_text', text: '🔍 View in Dashboard', emoji: true },
-          url: `${config.appUrl}/incidents/${incident.id}`,
+          url: `${config.appUrl}/dashboard/incidents/${incident.id}`,
           action_id: 'view_incident',
         },
         {

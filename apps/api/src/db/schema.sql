@@ -56,7 +56,8 @@ CREATE TABLE IF NOT EXISTS incidents (
   source TEXT DEFAULT 'manual' CHECK (source IN ('uptimerobot', 'sentry', 'sentinel-agent', 'slack', 'manual', 'github')),
   source_id TEXT,
   fingerprint TEXT,
-  merged_from TEXT[] DEFAULT '{}'
+  merged_from TEXT[] DEFAULT '{}',
+  slack_thread_ts TEXT
 );
 
 -- ─────────────────────────────────────────────────────────

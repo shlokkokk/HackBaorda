@@ -40,6 +40,7 @@ export interface Incident {
   source_id: string | null;
   fingerprint: string | null;
   merged_from: string[];
+  slack_thread_ts?: string | null;
 }
 
 export interface CreateIncidentInput {

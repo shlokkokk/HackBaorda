@@ -135,5 +135,12 @@ Please:
   // If Slack is configured, post the response
   const { sendIncidentSlackAlert } = await import('../services/slack.js');
   // Use a default channel or the org's configured channel
-  await sendIncidentSlackAlert('incidents', incident, response.response);
+  const slackTs = await sendIncidentSlackAlert('incidents', incident, response.response);
+  if (slackTs) {
+    const supabase = getSupabase();
+    await supabase
+      .from('incidents')
+      .update({ slack_thread_ts: slackTs })
+      .eq('id', incident.id);
+  }
 }

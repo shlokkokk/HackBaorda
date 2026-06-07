@@ -5,6 +5,7 @@
 import { createApp } from './app.js';
 import { config } from './lib/config.js';
 import { logger } from './lib/logger.js';
+import { startSLADaemon, stopSLADaemon } from './services/slaDaemon.js';
 
 async function main() {
   try {
@@ -16,11 +17,15 @@ async function main() {
         env: config.nodeEnv,
         cors: config.cors.origins,
       }, `🛡️  Sentinel API running on port ${config.port}`);
+
+      // Start the background SLA auto-escalation daemon
+      startSLADaemon();
     });
 
     // Graceful shutdown
     const shutdown = async (signal: string) => {
       logger.info(`Received ${signal}, shutting down gracefully...`);
+      stopSLADaemon();
       process.exit(0);
     };
 

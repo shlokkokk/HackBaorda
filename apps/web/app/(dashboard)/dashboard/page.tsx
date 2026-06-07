@@ -15,7 +15,8 @@ import {
   ArrowUpRight,
 } from 'lucide-react';
 import Link from 'next/link';
-import { cn } from '../../../lib/utils';
+import { cn, timeAgo } from '../../../lib/utils';
+import type { IngestionHealth } from '@sentinel/shared';
 
 // Animation variants
 const container = {
@@ -40,14 +41,19 @@ interface OverviewStats {
 export default function DashboardPage() {
   const { getToken } = useAuth();
   const [stats, setStats] = useState<OverviewStats | null>(null);
+  const [ingestionHealth, setIngestionHealth] = useState<IngestionHealth[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
       try {
         const token = await getToken();
-        const data = await api.analytics.overview(token ?? undefined) as OverviewStats;
-        setStats(data);
+        const [statsData, healthData] = await Promise.all([
+          api.analytics.overview(token ?? undefined) as Promise<OverviewStats>,
+          api.ingestion.health(token ?? undefined) as Promise<{ sources: IngestionHealth[] }>
+        ]);
+        setStats(statsData);
+        setIngestionHealth(healthData.sources);
       } catch {
         // Use demo data if API fails
         setStats({
@@ -59,6 +65,14 @@ export default function DashboardPage() {
           by_severity: { P0: 2, P1: 8, P2: 15, P3: 17, P4: 5 },
           by_source: { 'sentinel-agent': 18, sentry: 12, uptimerobot: 9, manual: 5, slack: 3 },
         });
+        setIngestionHealth([
+          { id: '1', org_id: '1', source: 'sentinel-agent', status: 'healthy', last_ping_at: new Date().toISOString(), last_incident_at: null, total_incidents: 18, created_at: '' },
+          { id: '2', org_id: '1', source: 'sentry', status: 'healthy', last_ping_at: new Date().toISOString(), last_incident_at: null, total_incidents: 12, created_at: '' },
+          { id: '3', org_id: '1', source: 'uptimerobot', status: 'healthy', last_ping_at: new Date().toISOString(), last_incident_at: null, total_incidents: 9, created_at: '' },
+          { id: '4', org_id: '1', source: 'slack', status: 'healthy', last_ping_at: new Date().toISOString(), last_incident_at: null, total_incidents: 3, created_at: '' },
+          { id: '5', org_id: '1', source: 'github', status: 'healthy', last_ping_at: new Date().toISOString(), last_incident_at: null, total_incidents: 0, created_at: '' },
+          { id: '6', org_id: '1', source: 'manual', status: 'healthy', last_ping_at: new Date().toISOString(), last_incident_at: null, total_incidents: 5, created_at: '' },
+        ]);
       }
       setLoading(false);
     }
@@ -213,29 +227,66 @@ export default function DashboardPage() {
           Source Health
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          {[
-            { name: 'Sentinel Agent', icon: '🛡️', color: 'bg-source-agent/20', textColor: 'text-source-agent' },
-            { name: 'Sentry', icon: '🐛', color: 'bg-source-sentry/20', textColor: 'text-source-sentry' },
-            { name: 'UptimeRobot', icon: '🟢', color: 'bg-source-uptimerobot/20', textColor: 'text-source-uptimerobot' },
-            { name: 'Slack', icon: '💬', color: 'bg-source-slack/20', textColor: 'text-source-slack' },
-            { name: 'GitHub', icon: '🐙', color: 'bg-muted/50', textColor: 'text-muted-foreground' },
-            { name: 'Manual', icon: '✍️', color: 'bg-muted/50', textColor: 'text-muted-foreground' },
-          ].map((source) => (
-            <div
-              key={source.name}
-              className={cn(
-                'flex flex-col items-center gap-2 p-4 rounded-lg border border-border/50 transition-all duration-200 hover:border-border',
-                source.color
-              )}
-            >
-              <span className="text-xl">{source.icon}</span>
-              <span className="text-xs font-medium text-center">{source.name}</span>
-              <div className="flex items-center gap-1">
-                <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
-                <span className="text-[10px] text-muted-foreground">Connected</span>
-              </div>
-            </div>
-          ))}
+          {(() => {
+            const SOURCE_INFO: Record<string, { name: string; icon: string; color: string; textColor: string }> = {
+              'sentinel-agent': { name: 'Sentinel Agent', icon: '🛡️', color: 'bg-source-agent/20', textColor: 'text-source-agent' },
+              sentry: { name: 'Sentry', icon: '🐛', color: 'bg-source-sentry/20', textColor: 'text-source-sentry' },
+              uptimerobot: { name: 'UptimeRobot', icon: '🟢', color: 'bg-source-uptimerobot/20', textColor: 'text-source-uptimerobot' },
+              slack: { name: 'Slack Bot', icon: '💬', color: 'bg-source-slack/20', textColor: 'text-source-slack' },
+              github: { name: 'GitHub', icon: '🐙', color: 'bg-muted/50', textColor: 'text-muted-foreground' },
+              manual: { name: 'Manual Form', icon: '✍️', color: 'bg-muted/50', textColor: 'text-muted-foreground' },
+            };
+
+            const defaultHealth: IngestionHealth[] = [
+              { id: '1', org_id: '', source: 'sentinel-agent', status: 'stale', last_ping_at: new Date(0).toISOString(), last_incident_at: null, total_incidents: 0, created_at: '' },
+              { id: '2', org_id: '', source: 'sentry', status: 'stale', last_ping_at: new Date(0).toISOString(), last_incident_at: null, total_incidents: 0, created_at: '' },
+              { id: '3', org_id: '', source: 'uptimerobot', status: 'stale', last_ping_at: new Date(0).toISOString(), last_incident_at: null, total_incidents: 0, created_at: '' },
+              { id: '4', org_id: '', source: 'slack', status: 'healthy', last_ping_at: new Date().toISOString(), last_incident_at: null, total_incidents: 0, created_at: '' },
+              { id: '5', org_id: '', source: 'github', status: 'stale', last_ping_at: new Date(0).toISOString(), last_incident_at: null, total_incidents: 0, created_at: '' },
+              { id: '6', org_id: '', source: 'manual', status: 'healthy', last_ping_at: new Date().toISOString(), last_incident_at: null, total_incidents: 0, created_at: '' },
+            ];
+
+            const statusColors = {
+              healthy: 'bg-success',
+              stale: 'bg-warning',
+              down: 'bg-destructive',
+            };
+
+            const getStatusText = (sh: IngestionHealth) => {
+              if (sh.status === 'down') return 'Offline';
+              if (sh.source === 'manual') return 'Always Available';
+              if (sh.source === 'slack' && sh.status === 'healthy') return 'Connected';
+              
+              const lastPingTime = new Date(sh.last_ping_at).getTime();
+              if (lastPingTime === 0 || isNaN(lastPingTime)) return 'Never Active';
+              
+              return `Active: ${timeAgo(sh.last_ping_at)}`;
+            };
+
+            return defaultHealth.map((def) => {
+              const current = ingestionHealth.find((h) => h.source === def.source) || def;
+              const info = SOURCE_INFO[current.source] ?? SOURCE_INFO.manual ?? { name: 'Manual Form', icon: '✍️', color: 'bg-muted/50', textColor: 'text-muted-foreground' };
+
+              return (
+                <div
+                  key={current.source}
+                  className={cn(
+                    'flex flex-col items-center gap-2 p-4 rounded-lg border border-border/50 transition-all duration-200 hover:border-border',
+                    info.color
+                  )}
+                >
+                  <span className="text-xl">{info.icon}</span>
+                  <span className="text-xs font-medium text-center">{info.name}</span>
+                  <div className="flex items-center gap-1.5">
+                    <div className={cn('w-1.5 h-1.5 rounded-full animate-pulse', statusColors[current.status] || 'bg-muted')} />
+                    <span className="text-[10px] text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis max-w-[100px]">
+                      {getStatusText(current)}
+                    </span>
+                  </div>
+                </div>
+              );
+            });
+          })()}
         </div>
       </motion.div>
     </motion.div>

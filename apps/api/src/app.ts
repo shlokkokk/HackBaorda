@@ -38,8 +38,8 @@ export function createApp(): express.Express {
   }));
 
   // ─── Body Parsing ──────────────────────────────────
-  // Raw body for webhook signature validation
-  app.use('/api/webhooks', express.raw({ type: 'application/json' }));
+  // Raw body for webhook signature validation (any content type)
+  app.use('/api/webhooks', express.raw({ type: '*/*' }));
   // JSON for everything else
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true }));
