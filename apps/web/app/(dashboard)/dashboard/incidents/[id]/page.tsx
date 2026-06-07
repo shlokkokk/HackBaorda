@@ -220,14 +220,16 @@ export default function IncidentDetailPage() {
               <span className="text-sm text-muted-foreground">Transition to:</span>
               {allowedTransitions.map((status) => {
                 const config = STATUS_CONFIG[status];
+                const StatusIcon = STATUS_ICONS[status] || AlertCircle;
                 return (
                   <button
                     key={status}
                     onClick={() => updateStatus(status)}
-                    className="px-3 py-1.5 rounded-lg text-xs font-medium border border-border/50 hover:bg-accent transition-colors"
+                    className="px-3.5 py-1.5 rounded-lg text-xs font-semibold border border-border/50 hover:bg-accent transition-colors flex items-center gap-1.5 shadow-sm"
                     style={{ color: config.textColor }}
                   >
-                    {config.icon} {config.label}
+                    <StatusIcon className="w-3.5 h-3.5" />
+                    {config.label}
                   </button>
                 );
               })}
@@ -288,23 +290,26 @@ export default function IncidentDetailPage() {
                         <Bot className="w-4 h-4 text-primary" />
                       </div>
                       <div className="max-w-[80%] px-4 py-2.5 rounded-xl rounded-tl-sm bg-muted/50 text-sm">
-                        <div className="prose prose-sm dark:prose-invert max-w-none">
+                        <div className="max-w-none">
                           <ReactMarkdown
                             components={{
-                              h1: ({ node, ...props }) => <h1 className="text-base font-extrabold text-foreground mt-4 mb-2" {...props} />,
-                              h2: ({ node, ...props }) => <h2 className="text-sm font-bold text-foreground mt-3 mb-1.5" {...props} />,
-                              h3: ({ node, ...props }) => <h3 className="text-xs font-semibold text-foreground mt-2 mb-1" {...props} />,
-                              p: ({ node, ...props }) => <p className="text-sm text-muted-foreground leading-relaxed mb-2" {...props} />,
-                              ul: ({ node, ...props }) => <ul className="list-disc list-inside space-y-1 my-2 text-sm text-muted-foreground ml-3" {...props} />,
-                              ol: ({ node, ...props }) => <ol className="list-decimal list-inside space-y-1 my-2 text-sm text-muted-foreground ml-3" {...props} />,
-                              li: ({ node, ...props }) => <li className="mb-0.5" {...props} />,
+                              h1: ({ node, ...props }) => <h1 className="text-lg font-extrabold text-foreground mt-4 mb-2 first:mt-0" {...props} />,
+                              h2: ({ node, ...props }) => <h2 className="text-base font-bold text-foreground mt-3.5 mb-1.5 first:mt-0" {...props} />,
+                              h3: ({ node, ...props }) => <h3 className="text-sm font-semibold text-foreground mt-3 mb-1 first:mt-0" {...props} />,
+                              p: ({ node, ...props }) => <p className="text-sm text-muted-foreground leading-relaxed mb-3 last:mb-0" {...props} />,
+                              ul: ({ node, ...props }) => <ul className="list-disc pl-5 space-y-1.5 my-3 text-sm text-muted-foreground" {...props} />,
+                              ol: ({ node, ...props }) => <ol className="list-decimal pl-5 space-y-1.5 my-3 text-sm text-muted-foreground" {...props} />,
+                              li: ({ node, ...props }) => <li className="pl-0.5 leading-relaxed" {...props} />,
                               code: ({ node, ...props }) => (
-                                <code className="px-1.5 py-0.5 rounded bg-muted font-mono text-xs text-primary" {...props} />
+                                <code className="px-1.5 py-0.5 rounded bg-muted font-mono text-xs text-primary font-semibold" {...props} />
                               ),
                               pre: ({ node, ...props }) => (
-                                <pre className="p-3 my-2 rounded-lg bg-black/40 border border-border/40 font-mono text-xs overflow-x-auto text-primary-foreground leading-relaxed" {...props} />
+                                <pre className="p-3.5 my-3 rounded-lg bg-black/45 border border-border/40 font-mono text-xs overflow-x-auto text-primary-foreground leading-relaxed shadow-inner" {...props} />
                               ),
                               strong: ({ node, ...props }) => <strong className="font-bold text-foreground" {...props} />,
+                              em: ({ node, ...props }) => <em className="italic text-muted-foreground/90" {...props} />,
+                              a: ({ node, ...props }) => <a className="text-primary hover:underline font-semibold transition-colors" target="_blank" rel="noopener noreferrer" {...props} />,
+                              blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-primary/50 bg-muted/20 pl-4 py-2 italic my-3 text-muted-foreground rounded-r" {...props} />,
                             }}
                           >
                             {interaction.response}
@@ -396,9 +401,15 @@ export default function IncidentDetailPage() {
           <div className="rounded-xl glass p-5 space-y-4">
             <h3 className="text-sm font-semibold">Details</h3>
             <div className="space-y-3 text-sm">
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Source</span>
-                <span className="flex items-center gap-1.5">{sourceConfig.icon} {sourceConfig.label}</span>
+                <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs border border-border bg-muted/30">
+                  {(() => {
+                    const SourceIcon = SOURCE_ICONS[incident.source] || Terminal;
+                    return <SourceIcon className="w-3.5 h-3.5" />;
+                  })()}
+                  {sourceConfig.label}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Services</span>

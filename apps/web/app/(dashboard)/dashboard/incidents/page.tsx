@@ -9,9 +9,30 @@ import { ErrorBanner } from '../../../../components/ui/error-banner';
 import { EmptyState } from '../../../../components/ui/empty-state';
 import { LiveBadge } from '../../../../components/ui/live-badge';
 import Link from 'next/link';
-import { AlertTriangle, Search, Plus, Clock, ArrowUpRight } from 'lucide-react';
+import {
+  AlertTriangle, Search, Plus, Clock, ArrowUpRight,
+  AlertCircle, Wrench, CheckCircle2, BookOpen,
+  Shield, Bug, Globe, MessageSquare, Github, Terminal
+} from 'lucide-react';
 import { SEVERITY_CONFIG, STATUS_CONFIG, SOURCE_CONFIG } from '@sentinel/shared';
 import type { Incident, Severity } from '@sentinel/shared';
+
+const STATUS_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  open: AlertCircle,
+  investigating: Search,
+  mitigating: Wrench,
+  resolved: CheckCircle2,
+  postmortem: BookOpen,
+};
+
+const SOURCE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  'sentinel-agent': Shield,
+  sentry: Bug,
+  uptimerobot: Globe,
+  slack: MessageSquare,
+  github: Github,
+  manual: Terminal,
+};
 
 export default function IncidentsPage() {
   const { getToken } = useAuth();
@@ -178,33 +199,61 @@ export default function IncidentsPage() {
             const status = STATUS_CONFIG[incident.status];
             const source = SOURCE_CONFIG[incident.source];
             return (
-              <Link key={incident.id} href={`/dashboard/incidents/${incident.id}`}>
+              <Link key={incident.id} href={`/dashboard/incidents/${incident.id}`} className="group block">
                 <div
-                  className="card-hover flex items-center gap-4 p-4"
-                  style={{ borderLeftWidth: 3, borderLeftColor: sev.color }}
+                  className="card-hover flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 transition-all duration-300 hover:scale-[1.005] hover:shadow-md relative overflow-hidden"
+                  style={{ borderLeftWidth: 4, borderLeftColor: sev.color }}
                 >
-                  <span
-                    className="shrink-0 rounded-md px-2 py-0.5 text-xs font-bold"
-                    style={{ backgroundColor: sev.bgColor, color: sev.textColor }}
-                  >
-                    {incident.severity}
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold">{incident.title}</p>
-                    <p className="mt-0.5 flex items-center gap-2 text-xs text-muted-foreground">
-                      <span>{source.icon} {source.label}</span>
-                      <span>·</span>
-                      <Clock className="inline h-3 w-3" />
-                      {timeAgo(incident.created_at)}
-                    </p>
+                  <div className="flex flex-1 items-start sm:items-center gap-3.5 min-w-0">
+                    <span
+                      className="shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-extrabold tracking-wider border font-mono uppercase"
+                      style={{ backgroundColor: sev.bgColor, color: sev.textColor, borderColor: 'currentColor' }}
+                    >
+                      {incident.severity}
+                    </span>
+                    <div className="min-w-0 flex-1 space-y-1.5">
+                      <p className="truncate text-sm font-semibold text-foreground tracking-tight group-hover:text-primary transition-colors">
+                        {incident.title}
+                      </p>
+                      <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-muted/40 border border-border/40 text-[10px] font-medium">
+                          {(() => {
+                            const SourceIcon = SOURCE_ICONS[incident.source] || Terminal;
+                            return <SourceIcon className="h-3 w-3" />;
+                          })()}
+                          {source.label}
+                        </span>
+                        <span className="text-border/80">•</span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-3.5 w-3.5 opacity-60" />
+                          {timeAgo(incident.created_at)}
+                        </span>
+                        {incident.affected_services?.length > 0 && (
+                          <>
+                            <span className="text-border/80">•</span>
+                            <span className="truncate max-w-[200px] text-[10px] font-mono bg-muted/20 px-1.5 py-0.5 rounded border border-border/10">
+                              {incident.affected_services.join(', ')}
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  <span
-                    className="shrink-0 rounded-md px-2 py-0.5 text-xs font-medium"
-                    style={{ backgroundColor: status.bgColor, color: status.textColor }}
-                  >
-                    {status.label}
-                  </span>
-                  <ArrowUpRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <div className="flex items-center gap-3 shrink-0 self-end sm:self-center">
+                    <span
+                      className="shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold border flex items-center gap-1.5 shadow-sm"
+                      style={{ backgroundColor: status.bgColor, color: status.textColor, borderColor: 'currentColor' }}
+                    >
+                      {(() => {
+                        const StatusIcon = STATUS_ICONS[incident.status] || AlertCircle;
+                        return <StatusIcon className="h-3.5 w-3.5" />;
+                      })()}
+                      {status.label}
+                    </span>
+                    <div className="p-1 rounded-lg bg-muted/30 border border-border/20 group-hover:bg-primary/10 group-hover:border-primary/20 transition-colors">
+                      <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                    </div>
+                  </div>
                 </div>
               </Link>
             );

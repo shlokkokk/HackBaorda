@@ -120,10 +120,10 @@ export default function OnCallPage() {
                   <div key={u.id} className="flex items-center justify-between p-4 rounded-lg bg-success/5 border border-success/15">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-success/10 text-success flex items-center justify-center font-bold text-sm shrink-0">
-                        {u.name.substring(0, 2).toUpperCase()}
+                        {(u.name ?? u.email ?? 'US').substring(0, 2).toUpperCase()}
                       </div>
                       <div>
-                        <p className="text-base font-bold text-foreground">{u.name}</p>
+                        <p className="text-base font-bold text-foreground">{u.name ?? 'Unnamed Responder'}</p>
                         <p className="text-xs text-muted-foreground flex items-center gap-1.5 mt-0.5">
                           <Mail className="w-3.5 h-3.5" />
                           {u.email}
