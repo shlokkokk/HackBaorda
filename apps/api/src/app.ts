@@ -17,9 +17,13 @@ import { createIngestionRoutes } from './routes/ingestion.js';
 import { createAnalyticsRoutes } from './routes/analytics.js';
 import { createRunbookRoutes } from './routes/runbooks.js';
 import { createPostmortemRoutes } from './routes/postmortems.js';
+import { initializeListeners } from './agent/listeners.js';
 
 export function createApp(): express.Express {
   const app = express();
+
+  // Initialize background event listeners
+  initializeListeners();
 
   // ─── Security ──────────────────────────────────────
   app.use(helmet({
