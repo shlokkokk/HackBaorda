@@ -42,3 +42,7 @@ coverage/
 
 # Misc
 *.tsbuildinfo
+
+# Internal Documents & Brain Files
+/internal docs/
+internal\ docs/
