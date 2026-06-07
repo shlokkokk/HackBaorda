@@ -35,18 +35,10 @@ export default function AnalyticsPage() {
         setMttrTrend((mt.trend ?? []) as Array<{ date: string; mttr_minutes: number }>);
         setMemoryStats(ms as { total_memories: number });
       } catch {
-        // Demo data
-        setOverview({ mttr_minutes: 23, sla_breaches: 2, total_incidents: 47 });
-        setHeatmap(Array.from({ length: 7 }, () => Array.from({ length: 24 }, () => Math.floor(Math.random() * 5))));
-        setMttrTrend([
-          { date: '2024-01-01', mttr_minutes: 45 },
-          { date: '2024-01-05', mttr_minutes: 38 },
-          { date: '2024-01-10', mttr_minutes: 32 },
-          { date: '2024-01-15', mttr_minutes: 28 },
-          { date: '2024-01-20', mttr_minutes: 22 },
-          { date: '2024-01-25', mttr_minutes: 18 },
-        ]);
-        setMemoryStats({ total_memories: 42 });
+        setOverview(null);
+        setHeatmap([]);
+        setMttrTrend([]);
+        setMemoryStats(null);
       }
       setLoading(false);
     }

@@ -70,52 +70,7 @@ export default function AgentsFleetPage() {
       const data = await api.agent.hosts(token ?? undefined);
       setHosts((data.hosts ?? []) as Host[]);
     } catch {
-      // Demo fleet fallback
-      setHosts([
-        {
-          id: 'host-1',
-          org_id: '',
-          hostname: 'prod-api-gateway-01',
-          host_id: 'i-09f12384a',
-          platform: 'linux (ubuntu 22.04)',
-          arch: 'x86_64',
-          ip_addresses: ['10.0.1.12', '54.210.45.2'],
-          agent_version: 'v1.2.4',
-          status: 'healthy',
-          last_heartbeat_at: new Date(Date.now() - 12000).toISOString(),
-          collectors_active: ['cpu', 'memory', 'disk', 'network', 'process', 'uptime', 'docker'],
-          collectors_failed: [],
-          baseline_status: 'ready',
-          baseline_age_hours: 148,
-          circuit_breaker: 'CLOSED',
-          discovered_services: [
-            { name: 'nginx-gateway', type: 'http', port: 443, status: 'running' },
-            { name: 'redis-cache', type: 'redis', port: 6379, status: 'running' }
-          ],
-          created_at: new Date().toISOString()
-        },
-        {
-          id: 'host-2',
-          org_id: '',
-          hostname: 'prod-db-postgres-primary',
-          host_id: 'i-0c8b211a9',
-          platform: 'linux (debian 11)',
-          arch: 'x86_64',
-          ip_addresses: ['10.0.2.5'],
-          agent_version: 'v1.2.4',
-          status: 'degraded',
-          last_heartbeat_at: new Date(Date.now() - 28000).toISOString(),
-          collectors_active: ['cpu', 'memory', 'disk', 'network', 'process'],
-          collectors_failed: ['uptime'],
-          baseline_status: 'learning',
-          baseline_age_hours: 8.5,
-          circuit_breaker: 'HALF_OPEN',
-          discovered_services: [
-            { name: 'postgresql', type: 'postgres', port: 5432, status: 'running' }
-          ],
-          created_at: new Date().toISOString()
-        }
-      ]);
+      setHosts([]);
     }
     setLoading(false);
   }

@@ -1,37 +1,19 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useAuth } from '@clerk/nextjs';
-import { motion } from 'framer-motion';
 import { api } from '../../../lib/api';
+import { usePolling } from '../../../lib/hooks/use-polling';
+import { ErrorBanner } from '../../../components/ui/error-banner';
+import { LiveBadge } from '../../../components/ui/live-badge';
 import {
-  AlertTriangle,
-  Clock,
-  Shield,
-  TrendingDown,
-  Activity,
-  Brain,
-  Zap,
-  ArrowUpRight,
-  Bug,
-  Globe,
-  MessageSquare,
-  Github,
-  Terminal,
+  AlertTriangle, Clock, Shield, TrendingDown, Activity, Zap,
+  ArrowUpRight, Bug, Globe, MessageSquare, Github, Terminal,
 } from 'lucide-react';
 import Link from 'next/link';
 import { cn, timeAgo } from '../../../lib/utils';
-import type { IngestionHealth } from '@sentinel/shared';
-
-// Animation variants
-const container = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.08 } },
-};
-const item = {
-  hidden: { y: 20, opacity: 0 },
-  show: { y: 0, opacity: 1 },
-};
+import type { IngestionHealth, Incident } from '@sentinel/shared';
+import { ALL_SOURCES } from '@sentinel/shared';
 
 interface OverviewStats {
   total_incidents: number;
@@ -43,258 +25,175 @@ interface OverviewStats {
   by_source: Record<string, number>;
 }
 
+const SOURCE_ICONS: Record<string, typeof Shield> = {
+  'sentinel-agent': Shield,
+  sentry: Bug,
+  uptimerobot: Globe,
+  slack: MessageSquare,
+  github: Github,
+  manual: Terminal,
+};
+
 export default function DashboardPage() {
   const { getToken } = useAuth();
   const [stats, setStats] = useState<OverviewStats | null>(null);
   const [ingestionHealth, setIngestionHealth] = useState<IngestionHealth[]>([]);
+  const [recentIncidents, setRecentIncidents] = useState<Incident[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function load() {
-      try {
-        const token = await getToken();
-        const [statsData, healthData] = await Promise.all([
-          api.analytics.overview(token ?? undefined) as Promise<OverviewStats>,
-          api.ingestion.health(token ?? undefined) as Promise<{ sources: IngestionHealth[] }>
-        ]);
-        setStats(statsData);
-        setIngestionHealth(healthData.sources);
-      } catch {
-        // Use demo data if API fails
-        setStats({
-          total_incidents: 47,
-          open_incidents: 3,
-          resolved_incidents: 44,
-          mttr_minutes: 23,
-          sla_breaches: 2,
-          by_severity: { P0: 2, P1: 8, P2: 15, P3: 17, P4: 5 },
-          by_source: { 'sentinel-agent': 18, sentry: 12, uptimerobot: 9, manual: 5, slack: 3 },
-        });
-        setIngestionHealth([
-          { id: '1', org_id: '1', source: 'sentinel-agent', status: 'healthy', last_ping_at: new Date().toISOString(), last_incident_at: null, total_incidents: 18, created_at: '' },
-          { id: '2', org_id: '1', source: 'sentry', status: 'healthy', last_ping_at: new Date().toISOString(), last_incident_at: null, total_incidents: 12, created_at: '' },
-          { id: '3', org_id: '1', source: 'uptimerobot', status: 'healthy', last_ping_at: new Date().toISOString(), last_incident_at: null, total_incidents: 9, created_at: '' },
-          { id: '4', org_id: '1', source: 'slack', status: 'healthy', last_ping_at: new Date().toISOString(), last_incident_at: null, total_incidents: 3, created_at: '' },
-          { id: '5', org_id: '1', source: 'github', status: 'healthy', last_ping_at: new Date().toISOString(), last_incident_at: null, total_incidents: 0, created_at: '' },
-          { id: '6', org_id: '1', source: 'manual', status: 'healthy', last_ping_at: new Date().toISOString(), last_incident_at: null, total_incidents: 5, created_at: '' },
-        ]);
-      }
+  const load = useCallback(async () => {
+    try {
+      const token = await getToken();
+      if (!token) return;
+      const [statsData, healthData, incidentsData] = await Promise.all([
+        api.analytics.overview(token) as Promise<OverviewStats>,
+        api.ingestion.health(token) as Promise<{ sources: IngestionHealth[] }>,
+        api.incidents.list({ limit: '5' }, token),
+      ]);
+      setStats(statsData);
+      setIngestionHealth(healthData.sources ?? []);
+      setRecentIncidents((incidentsData.incidents ?? []) as Incident[]);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'API unreachable');
+    } finally {
       setLoading(false);
     }
-    load();
   }, [getToken]);
 
+  const { refresh } = usePolling(load, 10_000);
+
   const statCards = [
-    {
-      label: 'Open Incidents',
-      value: stats?.open_incidents ?? 0,
-      icon: AlertTriangle,
-      color: 'text-severity-p1',
-      bgColor: 'bg-severity-p1/10',
-      glowColor: stats?.open_incidents && stats.open_incidents > 0 ? 'glow-destructive' : '',
-    },
-    {
-      label: 'MTTR',
-      value: `${stats?.mttr_minutes ?? 0}m`,
-      icon: Clock,
-      color: 'text-primary',
-      bgColor: 'bg-primary/10',
-      glowColor: '',
-    },
-    {
-      label: 'Resolved',
-      value: stats?.resolved_incidents ?? 0,
-      icon: Shield,
-      color: 'text-success',
-      bgColor: 'bg-success/10',
-      glowColor: 'glow-success',
-    },
-    {
-      label: 'SLA Breaches',
-      value: stats?.sla_breaches ?? 0,
-      icon: TrendingDown,
-      color: 'text-warning',
-      bgColor: 'bg-warning/10',
-      glowColor: '',
-    },
+    { label: 'Open', value: stats?.open_incidents ?? 0, icon: AlertTriangle, color: 'text-red-400' },
+    { label: 'MTTR', value: `${stats?.mttr_minutes ?? 0}m`, icon: Clock, color: 'text-blue-400' },
+    { label: 'Resolved', value: stats?.resolved_incidents ?? 0, icon: Shield, color: 'text-emerald-400' },
+    { label: 'SLA Breaches', value: stats?.sla_breaches ?? 0, icon: TrendingDown, color: 'text-amber-400' },
   ];
 
-  return (
-    <motion.div variants={container} initial="hidden" animate="show" className="space-y-8">
-      {/* ─── Header ──────────────────────────────── */}
-      <motion.div variants={item}>
-        <h1 className="text-3xl font-bold tracking-tight">
-          Command Center
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          Real-time overview of your incident response operations
-        </p>
-      </motion.div>
+  const healthBySource = Object.fromEntries(ingestionHealth.map((h) => [h.source, h]));
 
-      {/* ─── Stat Cards ──────────────────────────── */}
-      <motion.div variants={item} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {statCards.map((stat) => (
-          <motion.div
-            key={stat.label}
-            whileHover={{ scale: 1.02, y: -2 }}
-            className={cn(
-              'relative overflow-hidden rounded-xl p-5 glass transition-all duration-300',
-              stat.glowColor
-            )}
-          >
-            <div className="flex items-start justify-between">
+  return (
+    <div className="space-y-8">
+      <div className="flex items-center justify-between">
+        <div>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold tracking-tight">Command Center</h1>
+            <LiveBadge />
+          </div>
+          <p className="mt-1 text-sm text-muted-foreground">Live data · auto-refreshes every 10s</p>
+        </div>
+        <a
+          href="http://localhost:3002/demo"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hidden rounded-lg border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/20 sm:block"
+        >
+          Open Demo Chaos Panel →
+        </a>
+      </div>
+
+      {error && <ErrorBanner message={error} onRetry={refresh} />}
+
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {statCards.map((s) => (
+          <div key={s.label} className="card p-5">
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground font-medium">{stat.label}</p>
-                <p className={cn('text-3xl font-bold mt-1 animate-count-up', stat.color)}>
-                  {loading ? (
-                    <span className="inline-block w-16 h-8 skeleton rounded" />
-                  ) : (
-                    stat.value
-                  )}
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{s.label}</p>
+                <p className={cn('mt-1 text-3xl font-bold tabular-nums', s.color)}>
+                  {loading ? '—' : s.value}
                 </p>
               </div>
-              <div className={cn('p-2.5 rounded-lg', stat.bgColor)}>
-                <stat.icon className={cn('w-5 h-5', stat.color)} />
-              </div>
+              <s.icon className={cn('h-5 w-5 opacity-60', s.color)} />
             </div>
-            {/* Decorative gradient */}
-            <div className={cn('absolute -bottom-4 -right-4 w-24 h-24 rounded-full opacity-5', stat.bgColor)} />
-          </motion.div>
-        ))}
-      </motion.div>
-
-      {/* ─── Quick Actions + Recent Activity ────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Severity Breakdown */}
-        <motion.div variants={item} className="lg:col-span-2 rounded-xl glass p-6">
-          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <Activity className="w-5 h-5 text-primary" />
-            Severity Distribution
-          </h2>
-          <div className="space-y-3">
-            {(['P0', 'P1', 'P2', 'P3', 'P4'] as const).map((severity) => {
-              const count = stats?.by_severity[severity] ?? 0;
-              const total = stats?.total_incidents ?? 1;
-              const percentage = total > 0 ? (count / total) * 100 : 0;
-              const colors: Record<string, string> = {
-                P0: 'bg-severity-p0', P1: 'bg-severity-p1',
-                P2: 'bg-severity-p2', P3: 'bg-severity-p3', P4: 'bg-severity-p4',
-              };
-              return (
-                <div key={severity} className="flex items-center gap-3">
-                  <span className="w-8 text-sm font-mono font-bold text-muted-foreground">{severity}</span>
-                  <div className="flex-1 h-6 bg-muted/50 rounded-full overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${percentage}%` }}
-                      transition={{ duration: 0.8, delay: 0.2 }}
-                      className={cn('h-full rounded-full', colors[severity])}
-                    />
-                  </div>
-                  <span className="w-10 text-sm text-muted-foreground text-right">{count}</span>
-                </div>
-              );
-            })}
           </div>
-        </motion.div>
+        ))}
+      </div>
 
-        {/* Quick Actions */}
-        <motion.div variants={item} className="rounded-xl glass p-6">
-          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <Zap className="w-5 h-5 text-warning" />
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="card p-6 lg:col-span-2">
+          <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold">
+            <Activity className="h-4 w-4 text-primary" />
+            Recent Incidents
+          </h2>
+          {recentIncidents.length === 0 ? (
+            <p className="py-8 text-center text-sm text-muted-foreground">
+              No incidents yet — activate a scenario at{' '}
+              <a href="http://localhost:3002/demo" className="text-primary hover:underline">localhost:3002/demo</a>
+            </p>
+          ) : (
+            <div className="space-y-2">
+              {recentIncidents.map((inc) => (
+                <Link
+                  key={inc.id}
+                  href={`/dashboard/incidents/${inc.id}`}
+                  className="flex items-center justify-between rounded-lg px-3 py-2.5 transition-colors hover:bg-accent/50"
+                >
+                  <span className="truncate text-sm font-medium">{inc.title}</span>
+                  <span className="shrink-0 text-xs text-muted-foreground">{timeAgo(inc.created_at)}</span>
+                </Link>
+              ))}
+            </div>
+          )}
+          <Link href="/dashboard/incidents" className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline">
+            View all <ArrowUpRight className="h-3 w-3" />
+          </Link>
+        </div>
+
+        <div className="card p-6">
+          <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold">
+            <Zap className="h-4 w-4 text-amber-400" />
             Quick Actions
           </h2>
-          <div className="space-y-2">
+          <div className="space-y-1">
             {[
-              { label: 'Report Incident', href: '/dashboard/incidents?action=create', icon: AlertTriangle, color: 'text-severity-p1' },
-              { label: 'View All Incidents', href: '/dashboard/incidents', icon: Shield, color: 'text-primary' },
-              { label: 'Agent Memory', href: '/dashboard/analytics', icon: Brain, color: 'text-purple-400' },
-              { label: 'Postmortems', href: '/dashboard/postmortems', icon: ArrowUpRight, color: 'text-success' },
-            ].map((action) => (
+              { label: 'All Incidents', href: '/dashboard/incidents' },
+              { label: 'Analytics', href: '/dashboard/analytics' },
+              { label: 'Runbooks', href: '/dashboard/runbooks' },
+              { label: 'Demo Chaos Panel', href: 'http://localhost:3002/demo', external: true },
+            ].map((a) => (
               <Link
-                key={action.label}
-                href={action.href}
-                className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent/80 transition-all duration-200 group"
+                key={a.label}
+                href={a.href}
+                target={'external' in a ? '_blank' : undefined}
+                className="flex items-center justify-between rounded-lg px-3 py-2.5 text-sm transition-colors hover:bg-accent/50"
               >
-                <action.icon className={cn('w-4 h-4', action.color)} />
-                <span className="text-sm font-medium">{action.label}</span>
-                <ArrowUpRight className="w-3.5 h-3.5 ml-auto text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                {a.label}
+                <ArrowUpRight className="h-3.5 w-3.5 text-muted-foreground" />
               </Link>
             ))}
           </div>
-        </motion.div>
+        </div>
       </div>
 
-      {/* ─── Ingestion Health ────────────────────── */}
-      <motion.div variants={item} className="rounded-xl glass p-6">
-        <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-          <Activity className="w-5 h-5 text-success" />
-          Source Health
+      <div className="card p-6">
+        <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold">
+          <Activity className="h-4 w-4 text-emerald-400" />
+          Ingestion Sources
         </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          {(() => {
-            const SOURCE_INFO: Record<string, { name: string; icon: React.ComponentType<{ className?: string }>; color: string; textColor: string }> = {
-              'sentinel-agent': { name: 'Sentinel Agent', icon: Shield, color: 'bg-source-agent/20', textColor: 'text-source-agent' },
-              sentry: { name: 'Sentry', icon: Bug, color: 'bg-source-sentry/20', textColor: 'text-source-sentry' },
-              uptimerobot: { name: 'UptimeRobot', icon: Globe, color: 'bg-source-uptimerobot/20', textColor: 'text-source-uptimerobot' },
-              slack: { name: 'Slack Bot', icon: MessageSquare, color: 'bg-source-slack/20', textColor: 'text-source-slack' },
-              github: { name: 'GitHub', icon: Github, color: 'bg-muted/50', textColor: 'text-muted-foreground' },
-              manual: { name: 'Manual Form', icon: Terminal, color: 'bg-muted/50', textColor: 'text-muted-foreground' },
-            };
-
-            const defaultHealth: IngestionHealth[] = [
-              { id: '1', org_id: '', source: 'sentinel-agent', status: 'stale', last_ping_at: new Date(0).toISOString(), last_incident_at: null, total_incidents: 0, created_at: '' },
-              { id: '2', org_id: '', source: 'sentry', status: 'stale', last_ping_at: new Date(0).toISOString(), last_incident_at: null, total_incidents: 0, created_at: '' },
-              { id: '3', org_id: '', source: 'uptimerobot', status: 'stale', last_ping_at: new Date(0).toISOString(), last_incident_at: null, total_incidents: 0, created_at: '' },
-              { id: '4', org_id: '', source: 'slack', status: 'healthy', last_ping_at: new Date().toISOString(), last_incident_at: null, total_incidents: 0, created_at: '' },
-              { id: '5', org_id: '', source: 'github', status: 'stale', last_ping_at: new Date(0).toISOString(), last_incident_at: null, total_incidents: 0, created_at: '' },
-              { id: '6', org_id: '', source: 'manual', status: 'healthy', last_ping_at: new Date().toISOString(), last_incident_at: null, total_incidents: 0, created_at: '' },
-            ];
-
-            const statusColors = {
-              healthy: 'bg-success',
-              stale: 'bg-warning',
-              down: 'bg-destructive',
-            };
-
-            const getStatusText = (sh: IngestionHealth) => {
-              if (sh.status === 'down') return 'Offline';
-              if (sh.source === 'manual') return 'Always Available';
-              if (sh.source === 'slack' && sh.status === 'healthy') return 'Connected';
-              
-              const lastPingTime = new Date(sh.last_ping_at).getTime();
-              if (lastPingTime === 0 || isNaN(lastPingTime)) return 'Never Active';
-              
-              return `Active: ${timeAgo(sh.last_ping_at)}`;
-            };
-
-            return defaultHealth.map((def) => {
-              const current = ingestionHealth.find((h) => h.source === def.source) || def;
-              const info = SOURCE_INFO[current.source] ?? SOURCE_INFO.manual ?? { name: 'Manual Form', icon: Terminal, color: 'bg-muted/50', textColor: 'text-muted-foreground' };
-              const IconComponent = info.icon;
-
-              return (
-                <div
-                  key={current.source}
-                  className={cn(
-                    'flex flex-col items-center gap-2 p-4 rounded-lg border border-border/50 transition-all duration-200 hover:border-border',
-                    info.color
-                  )}
-                >
-                  <IconComponent className={cn("w-6 h-6", info.textColor)} />
-                  <span className="text-xs font-medium text-center">{info.name}</span>
-                  <div className="flex items-center gap-1.5">
-                    <div className={cn('w-1.5 h-1.5 rounded-full animate-pulse', statusColors[current.status] || 'bg-muted')} />
-                    <span className="text-[10px] text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis max-w-[100px]">
-                      {getStatusText(current)}
-                    </span>
-                  </div>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+          {ALL_SOURCES.map((source) => {
+            const h = healthBySource[source];
+            const Icon = SOURCE_ICONS[source] ?? Terminal;
+            const status = h?.status ?? 'stale';
+            const dot =
+              status === 'healthy' ? 'bg-emerald-500' : status === 'stale' ? 'bg-amber-500' : 'bg-red-500';
+            return (
+              <div key={source} className="rounded-xl border border-border/60 bg-secondary/30 p-4 text-center">
+                <Icon className="mx-auto mb-2 h-5 w-5 text-muted-foreground" />
+                <p className="text-xs font-medium capitalize">{source.replace('-', ' ')}</p>
+                <div className="mt-2 flex items-center justify-center gap-1.5">
+                  <span className={cn('h-1.5 w-1.5 rounded-full', dot)} />
+                  <span className="text-[10px] text-muted-foreground">
+                    {h ? timeAgo(h.last_ping_at) : 'No data'}
+                  </span>
                 </div>
-              );
-            });
-          })()}
+              </div>
+            );
+          })}
         </div>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }

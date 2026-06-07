@@ -10,6 +10,8 @@ import { handleGitHubWebhook } from './github.js';
 import { handleAgentWebhook } from './agent.js';
 import { handleClerkWebhook } from './clerk.js';
 import { handleSlackWebhook } from './slack.js';
+import { handleDemoWebhook } from './demo.js';
+import { config } from '../../lib/config.js';
 import {
   verifySlackSignature,
   verifySentrySignature,
@@ -71,6 +73,19 @@ export function createWebhookRoutes(): Router {
   router.post('/slack', verifySlackSignature, async (req, res, next) => {
     try {
       await handleSlackWebhook(req, res);
+    } catch (err) { next(err); }
+  });
+
+  // ─── SHOPFLOW DEMO APP (chaos panel → live incidents) ─
+  router.post('/demo', async (req, res, next) => {
+    try {
+      const secret = req.query['secret'] as string;
+      if (!config.webhooks.secret || secret !== config.webhooks.secret) {
+        res.status(401).json({ error: 'Invalid webhook secret' });
+        return;
+      }
+      const rawBody = req.body instanceof Buffer ? req.body.toString() : JSON.stringify(req.body);
+      await handleDemoWebhook(JSON.parse(rawBody), req, res);
     } catch (err) { next(err); }
   });
 

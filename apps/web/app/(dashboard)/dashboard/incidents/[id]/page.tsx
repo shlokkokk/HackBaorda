@@ -40,17 +40,7 @@ export default function IncidentDetailPage() {
       setIncident(data.incident as Incident);
       setInteractions((data.interactions ?? []) as AgentInteraction[]);
     } catch {
-      // Demo data
-      setIncident({
-        id, org_id: '', title: 'API Gateway timeout on /payments',
-        description: 'Multiple 504 errors detected on the payments API endpoint. Response times exceeding 30s threshold.',
-        severity: 'P1', status: 'investigating', source: 'sentinel-agent',
-        affected_services: ['payments-api', 'gateway'],
-        tags: ['auto-detected', 'sigma-3.2'], assignee_id: null, root_cause: null,
-        resolution: null, sla_breach_at: new Date(Date.now() + 3300000).toISOString(),
-        created_at: new Date(Date.now() - 300000).toISOString(), resolved_at: null,
-        mem0_memory_ids: [], embedding: null, source_id: null, fingerprint: null, merged_from: [],
-      });
+      setIncident(null);
     }
     setLoading(false);
   }

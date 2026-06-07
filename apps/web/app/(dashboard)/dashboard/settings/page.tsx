@@ -65,19 +65,7 @@ export default function SettingsPage() {
         setSlaConfig(data.org.sla_config ?? {});
       }
     } catch {
-      // Demo org fallback
-      const mockOrg: Org = {
-        id: 'org-demo-123',
-        name: 'Sentinel DevOps',
-        slack_workspace_id: 'T06A9283B',
-        webhook_secret: '87ba38f292cdb9308e23485ba99da1b827e8d2e8b23ad83d93',
-        sla_config: { P0: 15, P1: 60, P2: 240, P3: 1440, P4: 10080 },
-        created_at: new Date().toISOString(),
-      };
-      setOrg(mockOrg);
-      setName(mockOrg.name);
-      setSlackId(mockOrg.slack_workspace_id ?? '');
-      setSlaConfig(mockOrg.sla_config);
+      setOrg(null);
     }
     setLoading(false);
   }
@@ -100,8 +88,8 @@ export default function SettingsPage() {
         setOrg(response.org);
         alert('Settings saved successfully!');
       }
-    } catch {
-      alert('Failed to save settings to server (running offline fallback).');
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to save settings');
     }
     setSaving(false);
   }

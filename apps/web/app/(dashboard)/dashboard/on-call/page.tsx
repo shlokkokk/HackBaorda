@@ -56,39 +56,7 @@ export default function OnCallPage() {
       const data = await api.users.list(token ?? undefined);
       setUsers((data.users ?? []) as User[]);
     } catch {
-      // Demo users fallback
-      setUsers([
-        {
-          id: 'u-1',
-          org_id: '',
-          name: 'Shlok Kokk',
-          email: 'shlok@sentinel.ai',
-          role: 'admin',
-          slack_user_id: 'U06A29FB1',
-          on_call: true,
-          created_at: new Date().toISOString()
-        },
-        {
-          id: 'u-2',
-          org_id: '',
-          name: 'Aditya Vardhan',
-          email: 'aditya@sentinel.ai',
-          role: 'responder',
-          slack_user_id: 'U06B52FA2',
-          on_call: false,
-          created_at: new Date().toISOString()
-        },
-        {
-          id: 'u-3',
-          org_id: '',
-          name: 'Priyesh Patel',
-          email: 'priyesh@sentinel.ai',
-          role: 'responder',
-          slack_user_id: 'U06C88FA3',
-          on_call: false,
-          created_at: new Date().toISOString()
-        }
-      ]);
+      setUsers([]);
     }
     setLoading(false);
   }
@@ -102,10 +70,7 @@ export default function OnCallPage() {
         prev.map((u) => (u.id === userId ? { ...u, on_call: response.user.on_call } : u))
       );
     } catch {
-      // Offline fallback toggle
-      setUsers((prev) =>
-        prev.map((u) => (u.id === userId ? { ...u, on_call: !currentStatus } : u))
-      );
+      /* keep UI unchanged on failure */
     }
     setUpdatingId(null);
   }

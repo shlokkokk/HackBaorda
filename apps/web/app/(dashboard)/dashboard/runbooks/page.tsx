@@ -73,37 +73,7 @@ export default function RunbooksPage() {
       const data = await api.runbooks.list(token ?? undefined);
       setRunbooks((data.runbooks ?? []) as Runbook[]);
     } catch {
-      // Demo runbooks fallback
-      setRunbooks([
-        {
-          id: 'rb-1',
-          org_id: '',
-          title: 'Database CPU Spike Mitigation',
-          incident_type: 'resource-exhaustion',
-          safe_to_automate: true,
-          confidence_threshold: 0.9,
-          steps: [
-            { name: 'List active DB queries', command: 'SELECT pid, query, state FROM pg_stat_activity ORDER BY query_start ASC;' },
-            { name: 'Terminate long running transaction', command: 'SELECT pg_cancel_backend(pid);' },
-            { name: 'Scale up DB read replica', description: 'Use AWS console or CLI to scale replica capacity' }
-          ],
-          created_at: new Date().toISOString()
-        },
-        {
-          id: 'rb-2',
-          org_id: '',
-          title: 'API Gateway Timeout Recovery',
-          incident_type: 'network-degradation',
-          safe_to_automate: false,
-          confidence_threshold: 0.8,
-          steps: [
-            { name: 'Check service route health', command: 'curl -I https://api.gateway.internal/health' },
-            { name: 'Flush Gateway Redis cache', command: 'redis-cli -h cache.internal flushall' },
-            { name: 'Restart Gateway service container', command: 'docker service update --force gateway' }
-          ],
-          created_at: new Date().toISOString()
-        }
-      ]);
+      setRunbooks([]);
     }
     setLoading(false);
   }

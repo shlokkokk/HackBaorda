@@ -40,6 +40,7 @@ export function ChaosPanel() {
   const [meta, setMeta] = useState<Record<ChaosScenario, ScenarioMeta> | null>(null);
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [sentinelMsg, setSentinelMsg] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     const res = await fetch('/api/chaos');
@@ -63,6 +64,11 @@ export function ChaosPanel() {
       });
       const data = await res.json();
       setState(data.state);
+      if (data.sentinel?.ok) {
+        setSentinelMsg(data.message ?? 'Sentinel updated');
+      } else if (data.sentinel?.error) {
+        setError(data.sentinel.error);
+      }
     } catch {
       setError('Failed to toggle scenario');
     }
@@ -126,10 +132,18 @@ export function ChaosPanel() {
         </div>
       </div>
 
+      {sentinelMsg && (
+        <div className="flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-400">
+          <CheckCircle2 className="h-4 w-4" />
+          {sentinelMsg} — check <a href="http://localhost:3000/dashboard/incidents" className="underline" target="_blank" rel="noreferrer">Sentinel dashboard</a>
+        </div>
+      )}
+
       {error && (
         <div className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
           <AlertTriangle className="h-4 w-4" />
           {error}
+          <span className="text-xs opacity-80">— run: pnpm setup:demo</span>
         </div>
       )}
 

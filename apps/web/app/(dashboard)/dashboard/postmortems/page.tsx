@@ -105,39 +105,7 @@ export default function PostmortemsPage() {
       const data = await api.postmortems.list(token ?? undefined);
       setPostmortems((data.postmortems ?? []) as Postmortem[]);
     } catch {
-      // Demo postmortems fallback
-      setPostmortems([
-        {
-          id: 'pm-1',
-          incident_id: '1',
-          org_id: '',
-          review_status: 'published',
-          content: `# Postmortem Report — API Gateway Timeout Outage\n\n## Summary\nOn 2026-06-07, the API Gateway experienced a severe outage lasting 18 minutes due to database connection pool exhaustion. Sentinel Agent auto-detected the threat and notified the team.\n\n## Timeline\n- **15:02** Anomaly detected in DB CPU.\n- **15:05** Gateway started returning 504 errors.\n- **15:15** Connection limits increased; cache flushed.\n- **15:20** Recovery complete.\n\n## Action Items\n- Implement stricter rate limits on /checkout.\n- Enable auto-scaling for postgres replicas.`,
-          created_at: new Date(Date.now() - 86400000).toISOString(),
-          incidents: {
-            title: 'API Gateway timeout on /payments',
-            severity: 'P1',
-            source: 'sentinel-agent',
-            created_at: new Date(Date.now() - 300000).toISOString(),
-            resolved_at: new Date().toISOString()
-          }
-        },
-        {
-          id: 'pm-2',
-          incident_id: '2',
-          org_id: '',
-          review_status: 'draft',
-          content: `# Postmortem Report — Memory Leak checkout-ui\n\n## Summary\nUI application experienced memory crash on peak hour.\n\n## Action Items\n- Profile node process.`,
-          created_at: new Date().toISOString(),
-          incidents: {
-            title: 'Sentry: Unhandled ReferenceError in checkout flow',
-            severity: 'P2',
-            source: 'sentry',
-            created_at: new Date(Date.now() - 1200000).toISOString(),
-            resolved_at: new Date().toISOString()
-          }
-        }
-      ]);
+      setPostmortems([]);
     }
     setLoading(false);
   }
