@@ -2,6 +2,7 @@
 // Mem0 Client — AI Memory Layer
 // ═══════════════════════════════════════════════════════════
 
+import './polyfill.js';
 import MemoryClient from 'mem0ai';
 import { config } from '../lib/config.js';
 import { logger } from '../lib/logger.js';

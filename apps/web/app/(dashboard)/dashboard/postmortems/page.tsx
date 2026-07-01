@@ -52,36 +52,64 @@ const STATUS_LABELS = {
 // Simple custom Markdown rendering to avoid dependency issue
 function SimpleMarkdown({ content }: { content: string }) {
   const lines = content.split('\n');
+
+  const parseInline = (text: string) => {
+    const boldRegex = /(\*\*.*?\*\*)/g;
+    const parts = text.split(boldRegex);
+    return parts.map((part, i) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return (
+          <strong key={i} className="font-bold text-foreground">
+            {part.slice(2, -2)}
+          </strong>
+        );
+      }
+      return part;
+    });
+  };
+
   return (
     <div className="space-y-4 text-sm leading-relaxed text-muted-foreground">
       {lines.map((line, idx) => {
         if (line.startsWith('# ')) {
-          return <h1 key={idx} className="text-2xl font-bold text-foreground pt-4 border-b border-border/50 pb-2">{line.replace('# ', '')}</h1>;
+          return (
+            <h1 key={idx} className="text-2xl font-bold text-foreground pt-4 border-b border-border/50 pb-2">
+              {parseInline(line.substring(2))}
+            </h1>
+          );
         }
         if (line.startsWith('## ')) {
-          return <h2 key={idx} className="text-xl font-semibold text-foreground pt-3 border-b border-border/20 pb-1">{line.replace('## ', '')}</h2>;
+          return (
+            <h2 key={idx} className="text-xl font-semibold text-foreground pt-3 border-b border-border/20 pb-1">
+              {parseInline(line.substring(3))}
+            </h2>
+          );
         }
         if (line.startsWith('### ')) {
-          return <h3 key={idx} className="text-lg font-medium text-foreground pt-2">{line.replace('### ', '')}</h3>;
+          return (
+            <h3 key={idx} className="text-lg font-medium text-foreground pt-2">
+              {parseInline(line.substring(4))}
+            </h3>
+          );
         }
         if (line.startsWith('- ') || line.startsWith('* ')) {
           return (
             <ul key={idx} className="list-disc pl-5 space-y-1">
-              <li>{line.substring(2)}</li>
+              <li>{parseInline(line.substring(2))}</li>
             </ul>
           );
         }
         if (line.startsWith('> ')) {
           return (
             <blockquote key={idx} className="border-l-4 border-primary bg-muted/30 px-4 py-2 italic my-2 rounded-r">
-              {line.replace('> ', '')}
+              {parseInline(line.substring(2))}
             </blockquote>
           );
         }
         if (line.trim() === '') {
           return <div key={idx} className="h-2" />;
         }
-        return <p key={idx}>{line}</p>;
+        return <p key={idx}>{parseInline(line)}</p>;
       })}
     </div>
   );

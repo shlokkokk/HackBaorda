@@ -64,7 +64,7 @@ export async function handleAgentWebhook(
     hostname: alert.source.hostname,
     alertTitle: alert.alert.title,
     severity: alert.alert.severity,
-    sigma: alert.metric.baseline.sigma,
+    sigma: alert.metric.baseline?.sigma ?? null,
   }, 'Agent alert received');
 
   await recordSourcePing(orgId, 'sentinel-agent', true);
@@ -97,7 +97,10 @@ export async function handleAgentWebhook(
 
   const severity = alert.alert.severity as Severity;
   const title = alert.alert.title;
-  const description = `${alert.alert.description}\n\n**Metric:** ${alert.metric.name} = ${alert.metric.value} ${alert.metric.unit}\n**Baseline:** mean=${alert.metric.baseline.mean}, σ=${alert.metric.baseline.sigma}\n**Host:** ${alert.source.hostname} (${alert.source.platform}/${alert.source.arch})`;
+  const baselineInfo = alert.metric.baseline
+    ? `\n**Baseline:** mean=${alert.metric.baseline.mean}, σ=${alert.metric.baseline.sigma}`
+    : '';
+  const description = `${alert.alert.description}\n\n**Metric:** ${alert.metric.name} = ${alert.metric.value} ${alert.metric.unit}${baselineInfo}\n**Host:** ${alert.source.hostname} (${alert.source.platform}/${alert.source.arch})`;
 
   const fingerprint = alert.alert.fingerprint ?? generateFingerprint({
     title,
@@ -133,7 +136,11 @@ export async function handleAgentWebhook(
       source: 'sentinel-agent',
       source_id: alert.id,
       affected_services: [alert.alert.service],
-      tags: ['auto-detected', 'sentinel-agent', `sigma-${Math.round(alert.metric.baseline.sigma)}`],
+      tags: [
+        'auto-detected',
+        'sentinel-agent',
+        alert.metric.baseline ? `sigma-${Math.round(alert.metric.baseline.sigma)}` : 'static-threshold',
+      ],
       fingerprint,
       sla_breach_at: breachAt.toISOString(),
     })

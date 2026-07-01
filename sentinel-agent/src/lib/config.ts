@@ -1,6 +1,8 @@
 import * as dotenv from 'dotenv';
 import * as os from 'os';
-import { isValidOrgId, orgIdValidationError } from '@sentinel/shared';
+import * as shared from '@sentinel/shared';
+const isValidOrgId = shared.isValidOrgId || (shared as any).default?.isValidOrgId;
+const orgIdValidationError = shared.orgIdValidationError || (shared as any).default?.orgIdValidationError;
 
 dotenv.config();
 

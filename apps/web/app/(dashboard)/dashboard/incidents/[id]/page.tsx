@@ -210,7 +210,17 @@ export default function IncidentDetailPage() {
           {incident.description && (
             <div className="rounded-xl glass p-5">
               <h3 className="text-sm font-semibold mb-2">Description</h3>
-              <p className="text-sm text-muted-foreground whitespace-pre-wrap">{incident.description}</p>
+              <div className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                <ReactMarkdown
+                  components={{
+                    p: ({ node, ...props }) => <p className="mb-3 last:mb-0" {...props} />,
+                    strong: ({ node, ...props }) => <strong className="font-bold text-foreground" {...props} />,
+                    li: ({ node, ...props }) => <li className="list-disc pl-0.5 leading-relaxed" {...props} />,
+                  }}
+                >
+                  {incident.description}
+                </ReactMarkdown>
+              </div>
             </div>
           )}
 
