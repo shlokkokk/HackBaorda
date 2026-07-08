@@ -1,4 +1,4 @@
-// ═══════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════
 // Ingestion Source Constants
 // ═══════════════════════════════════════════════════════════
 
@@ -33,8 +33,8 @@ export const SOURCE_CONFIG: Record<IncidentSource, SourceConfig> = {
     isAutomatic: true,
     webhookPath: '/api/webhooks/sentry',
   },
-  'sentinel-agent': {
-    label: 'Sentinel Agent',
+  'chronicle-agent': {
+    label: 'Chronicle Agent',
     color: '#3b82f6',
     bgColor: 'rgba(59, 130, 246, 0.15)',
     icon: '🛡️',
@@ -47,7 +47,7 @@ export const SOURCE_CONFIG: Record<IncidentSource, SourceConfig> = {
     color: '#a855f7',
     bgColor: 'rgba(168, 85, 247, 0.15)',
     icon: '💬',
-    description: 'Engineer-reported via /sentinel command',
+    description: 'Engineer-reported via /chronicle command',
     isAutomatic: false,
     webhookPath: '/api/slack/commands',
   },

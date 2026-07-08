@@ -1,4 +1,4 @@
-{
+﻿{
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
@@ -8,7 +8,7 @@
     "types": ["node"],
     "lib": ["ES2022", "DOM"],
     "paths": {
-      "@sentinel/shared": ["../packages/shared/src"]
+      "@chronicle/shared": ["../packages/shared/src"]
     }
   },
   "include": ["src/**/*"]

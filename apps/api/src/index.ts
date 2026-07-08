@@ -1,4 +1,4 @@
-// ═══════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════
 // Server Entry Point
 // ═══════════════════════════════════════════════════════════
 
@@ -16,7 +16,7 @@ async function main() {
         port: config.port,
         env: config.nodeEnv,
         cors: config.cors.origins,
-      }, `🛡️  Sentinel API running on port ${config.port}`);
+      }, `🛡️  Chronicle API running on port ${config.port}`);
 
       // Start the background SLA auto-escalation daemon
       startSLADaemon();

@@ -101,7 +101,7 @@ export default function IncidentDetailPage() {
       const message =
         err instanceof Error
           ? err.message
-          : 'Could not reach Sentinel API. Is the backend running on port 3001?';
+          : 'Could not reach Chronicle API. Is the backend running on port 3001?';
       const errorInteraction: AgentInteraction = {
         id: `err-${Date.now()}`,
         incident_id: incident.id,
@@ -250,7 +250,7 @@ export default function IncidentDetailPage() {
           <div className="rounded-xl glass overflow-hidden">
             <div className="px-5 py-3 border-b border-border/50 flex items-center gap-2">
               <Bot className="w-5 h-5 text-primary" />
-              <h3 className="text-sm font-semibold">Sentinel AI</h3>
+              <h3 className="text-sm font-semibold">Chronicle AI</h3>
               <span className="text-xs text-muted-foreground ml-auto flex items-center gap-1">
                 <Brain className="w-3 h-3" /> Memory-enabled
               </span>
@@ -261,7 +261,7 @@ export default function IncidentDetailPage() {
               {interactions.length === 0 && !agentLoading && (
                 <div className="text-center py-12 text-muted-foreground">
                   <Bot className="w-10 h-10 mx-auto mb-3 opacity-50" />
-                  <p className="text-sm font-medium">Ask Sentinel AI about this incident</p>
+                  <p className="text-sm font-medium">Ask Chronicle AI about this incident</p>
                   <p className="text-xs mt-1">I can search past incidents, suggest fixes, and check SLA</p>
                   <div className="flex flex-wrap gap-2 justify-center mt-4">
                     {[
@@ -365,7 +365,7 @@ export default function IncidentDetailPage() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && sendQuery()}
-                  placeholder="Ask Sentinel AI..."
+                  placeholder="Ask Chronicle AI..."
                   className="flex-1 px-4 py-2.5 rounded-lg bg-muted/50 border border-border/50 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                 />
                 <button

@@ -1,4 +1,4 @@
-import { config } from '../lib/config.js';
+﻿import { config } from '../lib/config.js';
 import { logger } from '../lib/logger.js';
 import type { SystemSnapshot } from '../collectors/index.js';
 import type { CircuitBreaker } from '../pipeline/circuitBreaker.js';
@@ -81,7 +81,7 @@ export class HeartbeatSender {
       }
       logger.debug(`Heartbeat #${this.sequenceNumber} acknowledged.`);
     } catch (err) {
-      logger.error('Failed to dispatch heartbeat to Sentinel Server', err);
+      logger.error('Failed to dispatch heartbeat to Chronicle Server', err);
     }
   }
 

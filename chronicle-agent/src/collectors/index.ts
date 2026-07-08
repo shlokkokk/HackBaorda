@@ -1,4 +1,4 @@
-import si from 'systeminformation';
+﻿import si from 'systeminformation';
 import os from 'os';
 import { logger } from '../lib/logger.js';
 import { config } from '../lib/config.js';
@@ -164,7 +164,7 @@ export async function captureSystemSnapshot(): Promise<SystemSnapshot> {
       { port: 80, name: 'http-server', type: 'web_server' },
       { port: 443, name: 'https-server', type: 'web_server' },
       { port: 3000, name: 'node-app', type: 'app' },
-      { port: 3001, name: 'sentinel-api', type: 'app' },
+      { port: 3001, name: 'chronicle-api', type: 'app' },
     ];
 
     for (const mapping of portMappings) {

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useCallback, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -17,7 +17,7 @@ import type { ChaosScenario } from '@/lib/demo-state';
 interface ScenarioMeta {
   label: string;
   description: string;
-  sentinelSource: string;
+  chronicleSource: string;
   seededIncident: string;
   severity: string;
 }
@@ -40,7 +40,7 @@ export function ChaosPanel() {
   const [meta, setMeta] = useState<Record<ChaosScenario, ScenarioMeta> | null>(null);
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [sentinelMsg, setSentinelMsg] = useState<string | null>(null);
+  const [chronicleMsg, setChronicleMsg] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     const res = await fetch('/api/chaos');
@@ -64,10 +64,10 @@ export function ChaosPanel() {
       });
       const data = await res.json();
       setState(data.state);
-      if (data.sentinel?.ok) {
-        setSentinelMsg(data.message ?? 'Sentinel updated');
-      } else if (data.sentinel?.error) {
-        setError(data.sentinel.error);
+      if (data.chronicle?.ok) {
+        setChronicleMsg(data.message ?? 'Chronicle updated');
+      } else if (data.chronicle?.error) {
+        setError(data.chronicle.error);
       }
     } catch {
       setError('Failed to toggle scenario');
@@ -110,7 +110,7 @@ export function ChaosPanel() {
             Chaos Engineering Panel
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Trigger failure scenarios that flow into Sentinel via webhooks and monitoring
+            Trigger failure scenarios that flow into Chronicle via webhooks and monitoring
           </p>
         </div>
         <div className="flex gap-2">
@@ -132,10 +132,10 @@ export function ChaosPanel() {
         </div>
       </div>
 
-      {sentinelMsg && (
+      {chronicleMsg && (
         <div className="flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-400">
           <CheckCircle2 className="h-4 w-4" />
-          {sentinelMsg} — check <a href={`${process.env.NEXT_PUBLIC_SENTINEL_DASHBOARD_URL ?? 'http://localhost:3000'}/dashboard/incidents`} className="underline" target="_blank" rel="noreferrer">Sentinel dashboard</a>
+          {chronicleMsg} — check <a href={`${process.env.NEXT_PUBLIC_CHRONICLE_DASHBOARD_URL ?? 'http://localhost:3000'}/dashboard/incidents`} className="underline" target="_blank" rel="noreferrer">Chronicle dashboard</a>
         </div>
       )}
 
@@ -204,7 +204,7 @@ export function ChaosPanel() {
                       {m.severity}
                     </span>
                     <span className="rounded bg-secondary px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
-                      {m.sentinelSource}
+                      {m.chronicleSource}
                     </span>
                   </div>
                   <h3 className="font-semibold">{m.label}</h3>
@@ -246,7 +246,7 @@ export function ChaosPanel() {
         <ol className="space-y-2 text-sm text-muted-foreground">
           <li>1. Activate a scenario above (e.g. <strong className="text-foreground">Payment Gateway Timeout</strong>)</li>
           <li>2. Visit the Store or Checkout page to trigger the failure live</li>
-          <li>3. Watch Sentinel dashboard ingest the alert via Sentry, UptimeRobot, or agent</li>
+          <li>3. Watch Chronicle dashboard ingest the alert via Sentry, UptimeRobot, or agent</li>
           <li>4. Use the AI co-pilot — it searches Mem0 for matching past incidents from seed data</li>
           <li>5. Deactivate the scenario and use <strong className="text-foreground">verify_fix</strong> on /api/health</li>
         </ol>

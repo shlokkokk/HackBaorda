@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+﻿import { createClient } from '@supabase/supabase-js';
 import * as dotenv from 'dotenv';
 
 dotenv.config({ path: 'apps/api/.env' });
@@ -11,7 +11,7 @@ type IncidentSeed = {
   title: string;
   description: string;
   severity: 'P0' | 'P1' | 'P2' | 'P3' | 'P4';
-  source: 'uptimerobot' | 'sentry' | 'sentinel-agent' | 'slack' | 'manual' | 'github';
+  source: 'uptimerobot' | 'sentry' | 'chronicle-agent' | 'slack' | 'manual' | 'github';
   affected_services: string[];
   tags: string[];
   root_cause: string;
@@ -35,7 +35,7 @@ const INCIDENTS: IncidentSeed[] = [
     title: 'Payment authorization timeout during checkout',
     description: 'Stripe authorization calls exceeded 30 seconds. Customers saw pending transactions and retry loops.',
     severity: 'P1',
-    source: 'sentinel-agent',
+    source: 'chronicle-agent',
     affected_services: ['payments-api', 'checkout-ui', 'gateway'],
     tags: ['payments', 'transaction', 'timeout', 'stripe'],
     root_cause: 'Gateway retries amplified a slow Stripe authorization path while the payments connection pool was saturated.',
@@ -89,7 +89,7 @@ const INCIDENTS: IncidentSeed[] = [
     title: 'Payment status stuck in pending after worker backlog',
     description: 'Orders remained pending because payment settlement workers lagged behind the incoming transaction queue.',
     severity: 'P2',
-    source: 'sentinel-agent',
+    source: 'chronicle-agent',
     affected_services: ['payments-worker', 'orders-api', 'queue'],
     tags: ['payments', 'queue', 'worker-backlog'],
     root_cause: 'Worker concurrency was capped at 2 after a previous hotfix and queue depth crossed 25k jobs.',
@@ -107,7 +107,7 @@ const INCIDENTS: IncidentSeed[] = [
     title: 'Gateway overload caused all APIs to return 503',
     description: 'Gateway rejected requests for checkout, search, auth, and payments with connection pool exhausted errors.',
     severity: 'P0',
-    source: 'sentinel-agent',
+    source: 'chronicle-agent',
     affected_services: ['gateway', 'postgres-primary', 'payments-api', 'search-api'],
     tags: ['gateway', 'database', 'pool-exhaustion', 'global-outage'],
     root_cause: 'Database max connections were exhausted by leaked gateway clients during a traffic spike.',
@@ -132,7 +132,7 @@ const INCIDENTS: IncidentSeed[] = [
     resolution: 'Rolled back checkout-ui to the last stable build and added a null-safe token guard in the retry handler.',
     commands_used: [
       'kubectl rollout undo deployment/checkout-ui',
-      'pnpm test --filter=@sentinel/demo',
+      'pnpm test --filter=@chronicle/demo',
     ],
     lessons_learned: 'Checkout deploys need smoke tests for initial submit, retry, and abandoned-cart resume paths.',
     root_cause_category: 'frontend-regression',
@@ -159,7 +159,7 @@ const INCIDENTS: IncidentSeed[] = [
     title: 'Redis cache memory hit 99 percent',
     description: 'Cache nodes rejected writes and session reads became inconsistent.',
     severity: 'P1',
-    source: 'sentinel-agent',
+    source: 'chronicle-agent',
     affected_services: ['cache', 'gateway', 'checkout-ui'],
     tags: ['redis', 'memory', 'cache'],
     root_cause: 'Eviction policy was volatile-lru while most checkout/session keys had no TTL.',
@@ -184,7 +184,7 @@ const INCIDENTS: IncidentSeed[] = [
     resolution: 'Patched parser to normalize email claim shapes and rolled auth-service forward with regression tests.',
     commands_used: [
       'kubectl rollout restart deployment/auth-service',
-      'pnpm test --filter=@sentinel/api auth',
+      'pnpm test --filter=@chronicle/api auth',
     ],
     lessons_learned: 'Auth parsers need contract tests for federated identity edge cases.',
     root_cause_category: 'schema-assumption',
@@ -255,7 +255,7 @@ const RUNBOOKS: RunbookSeed[] = [
     steps: [
       { name: 'Confirm Sentry issue', command: 'sentry-cli issues list --query checkoutToken' },
       { name: 'Rollback checkout UI', command: 'kubectl rollout undo deployment/checkout-ui' },
-      { name: 'Run checkout smoke tests', command: 'pnpm test --filter=@sentinel/demo checkout' },
+      { name: 'Run checkout smoke tests', command: 'pnpm test --filter=@chronicle/demo checkout' },
     ],
   },
   {
@@ -342,7 +342,7 @@ async function getOrgId(client: ReturnType<typeof createClient>): Promise<string
 
   const { data: org, error: createError } = await client
     .from('orgs')
-    .insert({ name: 'Sentinel DevOps' })
+    .insert({ name: 'Chronicle DevOps' })
     .select('id')
     .single();
 
@@ -495,7 +495,7 @@ async function run() {
   const client = createClient(supabaseUrl, supabaseKey);
   const orgId = await getOrgId(client);
 
-  console.log(`Training Sentinel AI demo corpus for org ${orgId}`);
+  console.log(`Training Chronicle AI demo corpus for org ${orgId}`);
 
   for (const incident of INCIDENTS) {
     const id = await upsertIncident(client, orgId, incident);

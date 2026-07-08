@@ -1,4 +1,4 @@
-import { config, validateConfig } from './lib/config.js';
+﻿import { config, validateConfig } from './lib/config.js';
 import { logger } from './lib/logger.js';
 import { captureSystemSnapshot } from './collectors/index.js';
 import { BaselineLearner } from './baseline/learner.js';
@@ -10,7 +10,7 @@ import { HeartbeatSender } from './health/heartbeat.js';
 
 async function main() {
   validateConfig();
-  logger.info('🚀 Starting Sentinel Monitoring Agent...', {
+  logger.info('🚀 Starting Chronicle Monitoring Agent...', {
     orgId: config.orgId,
     hostname: config.hostname,
     checkIntervalMs: config.checkIntervalMs,
@@ -81,7 +81,7 @@ async function main() {
     logger.info('Flushing final queued alerts buffer...');
     await batchSender.flush();
 
-    logger.info('Sentinel Agent shutdown complete.');
+    logger.info('Chronicle Agent shutdown complete.');
     process.exit(0);
   };
 

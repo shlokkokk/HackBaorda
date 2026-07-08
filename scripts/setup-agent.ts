@@ -1,5 +1,5 @@
-// ═══════════════════════════════════════════════════════════
-// Sentinel Agent Setup — Auto-configure ORG_ID + WEBHOOK_SECRET
+﻿// ═══════════════════════════════════════════════════════════
+// Chronicle Agent Setup — Auto-configure ORG_ID + WEBHOOK_SECRET
 // ═══════════════════════════════════════════════════════════
 
 import { createClient } from '@supabase/supabase-js';
@@ -12,7 +12,7 @@ dotenv.config({ path: 'apps/api/.env' });
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const agentEnvPath = path.join('sentinel-agent', '.env');
+const agentEnvPath = path.join('chronicle-agent', '.env');
 
 function readEnvFile(filePath: string): Record<string, string> {
   if (!fs.existsSync(filePath)) return {};
@@ -34,7 +34,7 @@ function writeEnvFile(filePath: string, vars: Record<string, string>) {
 }
 
 async function run() {
-  console.log('🔧 Sentinel Agent Setup\n');
+  console.log('🔧 Chronicle Agent Setup\n');
 
   if (!supabaseUrl || !supabaseKey) {
     console.error('❌ SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set in apps/api/.env');
@@ -70,10 +70,10 @@ async function run() {
   let orgId: string | undefined;
 
   if (!orgs || orgs.length === 0) {
-    console.log('🌱 No organization found — creating default "Sentinel DevOps" org...');
+    console.log('🌱 No organization found — creating default "Chronicle DevOps" org...');
     const { data: newOrg, error: createError } = await client
       .from('orgs')
-      .insert({ name: 'Sentinel DevOps' })
+      .insert({ name: 'Chronicle DevOps' })
       .select()
       .single();
 
@@ -91,7 +91,7 @@ async function run() {
     orgs.forEach((o, i) => console.log(`   ${i + 1}. ${o.name} — ${o.id}`));
     orgId = orgs[0]!.id;
     console.log(`\n✅ Defaulting to first org: ${orgs[0]!.name} (${orgId})`);
-    console.log('   To use a different org, set ORG_ID manually in sentinel-agent/.env');
+    console.log('   To use a different org, set ORG_ID manually in chronicle-agent/.env');
   }
 
   // Sync webhook secret from API env if available
@@ -103,7 +103,7 @@ async function run() {
   const updatedEnv = {
     ...agentEnv,
     ORG_ID: orgId,
-    SENTINEL_WEBHOOK_URL: agentEnv['SENTINEL_WEBHOOK_URL'] || 'http://localhost:3001/api/webhooks/ingest',
+    CHRONICLE_WEBHOOK_URL: agentEnv['CHRONICLE_WEBHOOK_URL'] || 'http://localhost:3001/api/webhooks/ingest',
     ...(webhookSecret ? { WEBHOOK_SECRET: webhookSecret } : {}),
   };
 
@@ -135,7 +135,7 @@ async function run() {
     .limit(1);
 
   if (!healthRows || healthRows.length === 0) {
-    const sources = ['uptimerobot', 'sentry', 'sentinel-agent', 'slack', 'manual', 'github'];
+    const sources = ['uptimerobot', 'sentry', 'chronicle-agent', 'slack', 'manual', 'github'];
     await client.from('ingestion_health').upsert(
       sources.map((source) => ({
         org_id: orgId,

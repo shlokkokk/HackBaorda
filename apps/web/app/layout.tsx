@@ -1,15 +1,15 @@
-import type { Metadata } from 'next';
+﻿import type { Metadata } from 'next';
 import { ClerkProvider } from '@clerk/nextjs';
 import { dark } from '@clerk/themes';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Sentinel — AI Incident Response Platform',
+  title: 'Chronicle — AI Incident Response Platform',
   description: 'Intelligent incident response with persistent memory. Detect, respond, learn, repeat.',
   keywords: ['incident response', 'AI', 'DevOps', 'SRE', 'monitoring'],
-  authors: [{ name: 'Sentinel Team' }],
+  authors: [{ name: 'Chronicle Team' }],
   openGraph: {
-    title: 'Sentinel — AI Incident Response Platform',
+    title: 'Chronicle — AI Incident Response Platform',
     description: 'Intelligent incident response with persistent memory.',
     type: 'website',
   },

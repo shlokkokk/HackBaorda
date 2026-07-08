@@ -1,4 +1,4 @@
-<!--
+﻿<!--
   ╔══════════════════════════════════════════════════════════════════════════════╗
   ║                        A NOTE TO THE JUDGES                                 ║
   ╚══════════════════════════════════════════════════════════════════════════════╝
@@ -11,7 +11,7 @@
 >
 > The demo video doesn't reflect the project we actually built. We recorded the demo in separate clips — different parts of the project, one at a time — with the plan to combine them into one clean 5-7 minute walkthrough before submitting. But the laptop we had available just couldn't handle the video editing — it kept crashing, the software struggled with the files, and we were running out of time fast. On top of that, the network connection at the venue was painfully slow, so even uploading the raw clips was a battle. In the chaos of the deadline, the video ended up going out as-is — clips not properly joined, out of order, with the beginning missing context and the ending cut short. It genuinely stings, because we know the first thing you'll see is that video, and it does not represent the project the way we wanted it to.
 >
-> But the project itself? It's real, complete, and **fully deployed and live right now.** The Sentinel dashboard is running at **[hack-baorda-web.vercel.app](https://hack-baorda-web.vercel.app)**, the API backend is on **[Render](https://sentinel-api-c28t.onrender.com/api/health)**, and the ShopFlow chaos demo app is fully live and running at **[hack-baorda-demo.vercel.app](https://hack-baorda-demo.vercel.app)**. We didn't just build it locally — we shipped it to production. Everything works end-to-end: dual-layer AI memory (Mem0 + pgvector), a 70B parameter LLM pipeline via Groq, a live chaos demo app with 8 triggerable scenarios, auto-escalating SLA enforcement, Slack integration, postmortem generation, analytics dashboards — the whole thing.
+> But the project itself? It's real, complete, and **fully deployed and live right now.** The Chronicle dashboard is running at **[hack-baorda-web.vercel.app](https://hack-baorda-web.vercel.app)**, the API backend is on **[Render](https://chronicle-api-c28t.onrender.com/api/health)**, and the ShopFlow chaos demo app is fully live and running at **[hack-baorda-demo.vercel.app](https://hack-baorda-demo.vercel.app)**. We didn't just build it locally — we shipped it to production. Everything works end-to-end: dual-layer AI memory (Mem0 + pgvector), a 70B parameter LLM pipeline via Groq, a live chaos demo app with 8 triggerable scenarios, auto-escalating SLA enforcement, Slack integration, postmortem generation, analytics dashboards — the whole thing.
 >
 > So please — if the video doesn't make sense — **give the code and this README a fair read.** Everything is documented here: every feature, every AI capability, every architectural decision. The **[🎬 Demo Playbook for Judges](#-demo-playbook-for-judges)** section gives you a step-by-step walkthrough of the live system — you can open the deployed URLs right now and see it all working.
 >
@@ -39,7 +39,7 @@
 ![Mem0](https://img.shields.io/badge/Mem0_Memory-6366F1?style=for-the-badge&logoColor=white)
 
 [![Dashboard Live](https://img.shields.io/badge/Dashboard-Live%20on%20Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://hack-baorda-web.vercel.app)
-[![API Live](https://img.shields.io/badge/API-Live%20on%20Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://sentinel-api-c28t.onrender.com/api/health)
+[![API Live](https://img.shields.io/badge/API-Live%20on%20Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://chronicle-api-c28t.onrender.com/api/health)
 [![Demo Live](https://img.shields.io/badge/Demo%20App-Live%20on%20Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://hack-baorda-demo.vercel.app)
 
 **Built for [HackBaroda 2026](https://hackbaroda.com) · Track 5: AI and Developer Tools**
@@ -54,8 +54,8 @@
 
 | Service | URL | Platform |
 |---|---|---|
-| 🖥️ **Sentinel Dashboard** | [hack-baorda-web.vercel.app](https://hack-baorda-web.vercel.app) | Vercel |
-| ⚙️ **Sentinel API** | [sentinel-api-c28t.onrender.com](https://sentinel-api-c28t.onrender.com/api/health) | Render |
+| 🖥️ **Chronicle Dashboard** | [hack-baorda-web.vercel.app](https://hack-baorda-web.vercel.app) | Vercel |
+| ⚙️ **Chronicle API** | [chronicle-api-c28t.onrender.com](https://chronicle-api-c28t.onrender.com/api/health) | Render |
 | 🛒 **ShopFlow Demo** | [hack-baorda-demo.vercel.app](https://hack-baorda-demo.vercel.app) | Vercel |
 
 > [!WARNING]
@@ -67,7 +67,7 @@
 
 - [Live Deployment](#-live-deployment)
 - [The Problem](#-the-problem)
-- [What is Sentinel?](#-what-is-sentinel)
+- [What is Chronicle?](#-what-is-chronicle)
 - [Core Platform Features](#-core-platform-features)
 - [The AI Agent — 10 Specialized Tools](#-the-ai-agent--10-specialized-tools)
 - [How the Orchestrator Works](#-how-the-orchestrator-works)
@@ -77,7 +77,7 @@
 - [Multi-Source Ingestion](#-multi-source-ingestion)
 - [Dashboard — Every Page Explained](#-dashboard--every-page-explained)
 - [ShopFlow — Live Chaos Demo](#-shopflow--live-chaos-demo)
-- [Sentinel Host Agent](#-sentinel-host-agent)
+- [Chronicle Host Agent](#-chronicle-host-agent)
 - [Architecture Deep Dive](#-architecture-deep-dive)
 - [Tech Stack](#-tech-stack)
 - [Full API Surface](#-full-api-surface)
@@ -103,9 +103,9 @@ The result is sky-high MTTR, alert storms, burned-out engineers, and the same po
 
 ---
 
-## 💡 What is Sentinel?
+## 💡 What is Chronicle?
 
-Sentinel is an **AI-native incident command center** that wraps a persistent operational memory layer around your entire incident lifecycle.
+Chronicle is an **AI-native incident command center** that wraps a persistent operational memory layer around your entire incident lifecycle.
 
 Every resolved incident is embedded into a dual-layer vector database (Mem0 + pgvector). When the next incident fires, the AI Agent instantly retrieves *exactly* what happened last time, *exactly* what the fix was, and *exactly* which runbook to run — before the responder even types a question.
 
@@ -127,7 +127,7 @@ Alert Fires  →  Deduplicate (fingerprint)  →  Auto-Triage AI  →  Slack Ale
                                         Postmortem auto-drafted
 ```
 
-**Sentinel doesn't just respond to incidents. It gets smarter with every one.**
+**Chronicle doesn't just respond to incidents. It gets smarter with every one.**
 
 ---
 
@@ -136,7 +136,7 @@ Alert Fires  →  Deduplicate (fingerprint)  →  Auto-Triage AI  →  Slack Ale
 | Feature | Description |
 |---|---|
 | 🧠 **Persistent AI Memory** | Dual-layer vector store (Mem0 + pgvector) embeds every resolution permanently |
-| 🔔 **Multi-Source Ingestion** | Sentry, UptimeRobot, GitHub, Sentinel Agent, Slack, Manual — all normalized |
+| 🔔 **Multi-Source Ingestion** | Sentry, UptimeRobot, GitHub, Chronicle Agent, Slack, Manual — all normalized |
 | 🤖 **Custom AI Pipeline** | Groq `llama-3.3-70b-versatile` with parallel RAG prefetch across Mem0 + pgvector + runbooks |
 | ⏰ **SLA Auto-Escalation** | Background daemon escalates P3→P2→P1→P0 automatically every 60 seconds |
 | 🔁 **Alert Deduplication** | SHA-based fingerprinting merges duplicate signals from multiple sources within 10 min |
@@ -151,7 +151,7 @@ Alert Fires  →  Deduplicate (fingerprint)  →  Auto-Triage AI  →  Slack Ale
 
 ## 🤖 The AI Brain — Custom RAG Pipeline
 
-The intelligence layer in Sentinel is a **custom-built RAG (Retrieval-Augmented Generation) pipeline** powered by **Groq's `llama-3.3-70b-versatile`** — one of the fastest and most capable open models available, running at Groq's silicon speed.
+The intelligence layer in Chronicle is a **custom-built RAG (Retrieval-Augmented Generation) pipeline** powered by **Groq's `llama-3.3-70b-versatile`** — one of the fastest and most capable open models available, running at Groq's silicon speed.
 
 This is **not** a standard agentic tool-calling loop. It's a purpose-built incident intelligence pipeline: memory is fetched in parallel *before* the LLM is ever invoked, so the model always responds with full context in hand rather than making round-trip tool calls. This keeps responses consistently fast (3–8s) and grounded in real data.
 
@@ -190,7 +190,7 @@ This is **not** a standard agentic tool-calling loop. It's a purpose-built incid
 
 ## ⚙️ How the Pipeline Works
 
-Sentinel's AI pipeline uses a **parallel prefetch architecture** — all three memory stores are queried simultaneously *before* the LLM is ever called. Groq receives one single, fully-enriched system prompt and returns one response. No agentic loops, no round-trips. Total response time: **3–8 seconds**.
+Chronicle's AI pipeline uses a **parallel prefetch architecture** — all three memory stores are queried simultaneously *before* the LLM is ever called. Groq receives one single, fully-enriched system prompt and returns one response. No agentic loops, no round-trips. Total response time: **3–8 seconds**.
 
 ```typescript
 // From orchestrator.ts — parallel prefetch before every LLM call
@@ -239,7 +239,7 @@ const response = await runAgent(incident, query, orgId);
 
 ## 🧠 Dual-Layer Memory Architecture
 
-Sentinel's AI memory is not a simple chat history. It is a **production-grade episodic memory system** combining two complementary retrieval mechanisms.
+Chronicle's AI memory is not a simple chat history. It is a **production-grade episodic memory system** combining two complementary retrieval mechanisms.
 
 ```
 On Incident Resolution:
@@ -286,7 +286,7 @@ On Next Incident Query — Both searched in parallel:
 
 ### Embedding Generation
 
-Sentinel uses a **1536-dimensional deterministic embedding** built from character frequency + word-level hashing, normalized to a unit vector. This runs without an external embedding API, making it fully self-contained.
+Chronicle uses a **1536-dimensional deterministic embedding** built from character frequency + word-level hashing, normalized to a unit vector. This runs without an external embedding API, making it fully self-contained.
 
 ```typescript
 // createDeterministicEmbedding() — from embeddings.ts
@@ -314,7 +314,7 @@ pnpm ai:train   # Runs train-ai-demo.ts → Mem0 + pgvector
 
 ## ⏰ SLA Auto-Escalation Daemon
 
-Sentinel runs [`slaDaemon.ts`](apps/api/src/services/slaDaemon.ts) as a **background polling loop** every 60 seconds that enforces two automatic escalation rules — no human needed.
+Chronicle runs [`slaDaemon.ts`](apps/api/src/services/slaDaemon.ts) as a **background polling loop** every 60 seconds that enforces two automatic escalation rules — no human needed.
 
 ### Escalation Rules
 
@@ -355,12 +355,12 @@ if (inc.severity === 'P2' && elapsedMins >= 10) {
 
 ## 🔁 Alert Deduplication
 
-Sentinel's [`deduplication.ts`](apps/api/src/services/deduplication.ts) prevents alert storms from creating duplicate incidents.
+Chronicle's [`deduplication.ts`](apps/api/src/services/deduplication.ts) prevents alert storms from creating duplicate incidents.
 
 Every incoming webhook payload is fingerprinted before insert:
 
 ```typescript
-// generateFingerprint() from @sentinel/shared
+// generateFingerprint() from @chronicle/shared
 // SHA-based hash of: title + description + affected_services
 fingerprint = generateFingerprint({ title, description, affected_services });
 ```
@@ -371,11 +371,11 @@ If a matching fingerprint exists within the last **10 minutes** for an active in
 
 ## 📡 Multi-Source Ingestion
 
-Sentinel normalizes alerts from every major monitoring tool into a unified incident model.
+Chronicle normalizes alerts from every major monitoring tool into a unified incident model.
 
 ```
 ┌─────────────┐  ┌──────────────┐  ┌───────────┐  ┌─────────────┐  ┌──────────────┐
-│   Sentry    │  │ UptimeRobot  │  │  GitHub   │  │    Slack    │  │   Sentinel   │
+│   Sentry    │  │ UptimeRobot  │  │  GitHub   │  │    Slack    │  │   Chronicle   │
 │  (Errors)   │  │  (Uptime)    │  │  (Issues) │  │  (Commands) │  │    Agent     │
 └──────┬──────┘  └──────┬───────┘  └─────┬─────┘  └──────┬──────┘  └──────┬───────┘
        │                │                │                │                │
@@ -413,8 +413,8 @@ Sentinel normalizes alerts from every major monitoring tool into a unified incid
 | **Sentry** | `webhooks/sentry.ts` | Exceptions, errors, regressions |
 | **UptimeRobot** | `webhooks/uptimerobot.ts` | Uptime alerts, SSL warnings |
 | **GitHub** | `webhooks/github.ts` | Labeled issues converted to incidents |
-| **Slack** | `webhooks/slack.ts` | Bolt app — `/sentinel` slash commands, interactive alerts |
-| **Sentinel Agent** | `webhooks/agent.ts` | Host metrics, anomaly alerts, heartbeats |
+| **Slack** | `webhooks/slack.ts` | Bolt app — `/chronicle` slash commands, interactive alerts |
+| **Chronicle Agent** | `webhooks/agent.ts` | Host metrics, anomaly alerts, heartbeats |
 | **ShopFlow Demo** | `webhooks/demo.ts` | Controlled chaos scenario signals |
 | **Clerk** | `webhooks/clerk.ts` | User sync and org provisioning |
 | **Manual** | Dashboard UI | Responder-created incidents |
@@ -430,7 +430,7 @@ The war room. Auto-refreshes every **10 seconds**.
 - **4 KPI Cards:** Open Incidents · MTTR · Resolved · SLA Breaches — all live from `GET /api/analytics/overview`
 - **Recent Incidents Feed:** Last 5 incidents with one-click deep links
 - **Quick Actions Panel:** Incidents · Analytics · Runbooks · Chaos Panel
-- **Ingestion Source Health Grid:** 6 source tiles (Sentinel Agent, Sentry, UptimeRobot, Slack, GitHub, Manual) with colored health dots showing `healthy / stale / unhealthy` and last-ping timestamp
+- **Ingestion Source Health Grid:** 6 source tiles (Chronicle Agent, Sentry, UptimeRobot, Slack, GitHub, Manual) with colored health dots showing `healthy / stale / unhealthy` and last-ping timestamp
 - **ShopFlow Chaos Panel link** in the header
 
 ---
@@ -555,7 +555,7 @@ Three-tab organization configuration.
 
 **SLA Policies:** Per-severity SLA target editor (in minutes) for P0 through P4 — changes feed directly into SLA daemon
 
-**Webhook Integrations:** Org ingestion secret (SHA256 HMAC) with one-click copy · Ready-to-paste webhook URLs for UptimeRobot · Sentry · GitHub · Sentinel Agent
+**Webhook Integrations:** Org ingestion secret (SHA256 HMAC) with one-click copy · Ready-to-paste webhook URLs for UptimeRobot · Sentry · GitHub · Chronicle Agent
 
 ---
 
@@ -579,22 +579,22 @@ ShopFlow is a **fully functioning e-commerce app** built exclusively to let judg
 
 | Scenario | Service Affected | Detection Source | AI Memory Match |
 |---|---|---|---|
-| 💳 **Payment Timeout** | `/api/payments` → 504 | Sentinel Agent | Pool saturation, retry storm, stuck workers |
+| 💳 **Payment Timeout** | `/api/payments` → 504 | Chronicle Agent | Pool saturation, retry storm, stuck workers |
 | 🔁 **Duplicate Transaction** | Checkout retry logic | Sentry / Manual | Idempotency keys, charge reconciliation |
 | 🔑 **Stripe Webhook Failure** | Signature validation | Sentry | Secret rotation, event replay |
-| 🔥 **Gateway Overload** | All APIs → 503 | Sentinel Agent | DB pool exhaustion, pgbouncer restart |
+| 🔥 **Gateway Overload** | All APIs → 503 | Chronicle Agent | DB pool exhaustion, pgbouncer restart |
 | 💥 **Checkout JS Error** | Frontend crash | Sentry | Rollback, auth token guard |
 | 🐢 **Slow Search** | `/api/search` latency spike | Manual | Missing index, query tuning |
-| 🧱 **Redis Memory Pressure** | Cache at capacity | Sentinel Agent | Eviction policy, defrag |
+| 🧱 **Redis Memory Pressure** | Cache at capacity | Chronicle Agent | Eviction policy, defrag |
 | 🔒 **SSL Certificate Expiry** | HTTPS warning | UptimeRobot | Cert renewal, ingress restart |
 
-**Instrumented with Sentry SDK** — errors auto-flow as webhook events to Sentinel.
+**Instrumented with Sentry SDK** — errors auto-flow as webhook events to Chronicle.
 
 ---
 
-## 🖥️ Sentinel Host Agent
+## 🖥️ Chronicle Host Agent
 
-A lightweight **Node.js daemon** (`sentinel-agent/`) that runs on monitored infrastructure and sends metrics and anomaly alerts to Sentinel.
+A lightweight **Node.js daemon** (`chronicle-agent/`) that runs on monitored infrastructure and sends metrics and anomaly alerts to Chronicle.
 
 ### Internal Architecture
 
@@ -637,14 +637,14 @@ HeartbeatSender.send(snapshot)   ← 10% of cycles send full heartbeat
 ### Monorepo Structure
 
 ```
-sentinel/                         ← pnpm workspaces + Turborepo
+chronicle/                         ← pnpm workspaces + Turborepo
 ├── apps/
 │   ├── api/                      Express.js backend
 │   │   └── src/
 │   │       ├── agent/
 │   │       │   ├── orchestrator.ts   AI fast-path (parallel prefetch + Groq)
 │   │       │   ├── prompts/
-│   │       │   │   └── system.ts     Sentinel AI persona + postmortem template
+│   │       │   │   └── system.ts     Chronicle AI persona + postmortem template
 │   │       │   └── tools/
 │   │       │       └── index.ts      All 10 LangChain tools
 │   │       ├── db/               Supabase client + schema.sql
@@ -694,7 +694,7 @@ sentinel/                         ← pnpm workspaces + Turborepo
 │           └── constants/        SEVERITY_CONFIG, STATUS_CONFIG, SOURCE_CONFIG,
 │                                 STATUS_TRANSITIONS, generateFingerprint()
 │
-├── sentinel-agent/               Node.js host monitoring daemon
+├── chronicle-agent/               Node.js host monitoring daemon
 │   └── src/
 │       ├── baseline/             BaselineLearner (24h window)
 │       ├── collectors/           CPU, Memory, Disk, Network, Process
@@ -772,8 +772,8 @@ sentinel/                         ← pnpm workspaces + Turborepo
 | **Database** | Supabase PostgreSQL | All persistent data, RLS, Realtime |
 | **Cache / Rate Limit** | Upstash Redis | Request rate limiting, ephemeral caching |
 | **Notifications** | Slack Bolt SDK | Bot alerts, slash commands, thread replies |
-| **Error Tracking** | Sentry (demo app) | Exception capture → webhook → Sentinel |
-| **Uptime Monitoring** | UptimeRobot | HTTP monitor alerts → webhook → Sentinel |
+| **Error Tracking** | Sentry (demo app) | Exception capture → webhook → Chronicle |
+| **Uptime Monitoring** | UptimeRobot | HTTP monitor alerts → webhook → Chronicle |
 | **Email** | Resend | Transactional email notifications |
 | **Validation** | Zod | Schema validation on all inputs + tool schemas |
 | **Logging** | Pino | Structured JSON logs with service child loggers |
@@ -838,7 +838,7 @@ sentinel/                         ← pnpm workspaces + Turborepo
 | `POST` | `/api/webhooks/sentry` | Sentry issue ingest |
 | `POST` | `/api/webhooks/uptimerobot` | UptimeRobot alert ingest |
 | `POST` | `/api/webhooks/github` | GitHub issue ingest |
-| `POST` | `/api/webhooks/ingest` | Sentinel Agent metric ingest |
+| `POST` | `/api/webhooks/ingest` | Chronicle Agent metric ingest |
 | `POST` | `/api/webhooks/demo` | ShopFlow chaos signal ingest |
 | `POST` | `/api/webhooks/slack` | Slack Bolt event handler |
 | `POST` | `/api/webhooks/clerk` | Clerk user/org sync |
@@ -870,8 +870,8 @@ sentinel/                         ← pnpm workspaces + Turborepo
 ### 1. Clone & Install
 
 ```bash
-git clone https://github.com/your-org/sentinel.git
-cd sentinel
+git clone https://github.com/your-org/chronicle.git
+cd chronicle
 pnpm install
 ```
 
@@ -881,7 +881,7 @@ pnpm install
 cp .env.example apps/api/.env
 cp .env.example apps/web/.env.local
 cp .env.example apps/demo/.env.local
-cp .env.example sentinel-agent/.env
+cp .env.example chronicle-agent/.env
 ```
 
 **Required for core functionality:**
@@ -959,7 +959,7 @@ pnpm dev
 
 | Service | URL | Description |
 |---|---|---|
-| **Dashboard** | http://localhost:3000 | Sentinel command center |
+| **Dashboard** | http://localhost:3000 | Chronicle command center |
 | **API** | http://localhost:3001 | Express REST backend |
 | **ShopFlow Demo** | http://localhost:3002 | Chaos demo application |
 
@@ -968,14 +968,14 @@ Individual services:
 pnpm dev:web     # Next.js dashboard only
 pnpm dev:api     # Express API only
 pnpm dev:demo    # ShopFlow demo only
-pnpm dev:agent   # Sentinel host agent
+pnpm dev:agent   # Chronicle host agent
 ```
 
 ---
 
 ## 🎬 Demo Playbook for Judges
 
-> **Objective:** See Sentinel catch a real incident, retrieve correct memories via AI, and run the full resolution-to-postmortem lifecycle — all on the live deployed system.
+> **Objective:** See Chronicle catch a real incident, retrieve correct memories via AI, and run the full resolution-to-postmortem lifecycle — all on the live deployed system.
 
 > [!NOTE]
 > **Render Cold Start:** The first time you open the dashboard, the backend may take **30–50 seconds** to wake up (Render free tier sleeps after inactivity). Just wait and refresh — after that, everything is instant.
@@ -996,7 +996,7 @@ Click **Incidents** in the sidebar → you'll see pre-seeded resolved incidents 
 
 **4. Open any incident → Talk to the AI**
 
-Click into an incident → the **Sentinel AI** chat panel is on the left. Try these prompts:
+Click into an incident → the **Chronicle AI** chat panel is on the left. Try these prompts:
 
 ```
 "What caused similar issues before?"
@@ -1023,8 +1023,8 @@ Click into an incident → the **Sentinel AI** chat panel is on the left. Try th
 * Open the **ShopFlow Demo Storefront** at **[hack-baorda-demo.vercel.app](https://hack-baorda-demo.vercel.app)** and open the **Chaos Engineering Panel** at **[hack-baorda-demo.vercel.app/demo](https://hack-baorda-demo.vercel.app/demo)**.
 * On the Chaos Engineering Panel, click **Activate Scenario** for a scenario like **"Payment Gateway Timeout"** (Severity: P1) or **"CPU Spike"** (Severity: P2).
 * Visit the storefront or simulate checks/transactions to trigger the failure live.
-* Return to the **Sentinel Dashboard** at **[hack-baorda-web.vercel.app](https://hack-baorda-web.vercel.app)** — a new incident will automatically ingest and appear in the Command Center within seconds, starting the SLA countdown timer.
-* Click into the new incident and try querying the Sentinel AI copilot:
+* Return to the **Chronicle Dashboard** at **[hack-baorda-web.vercel.app](https://hack-baorda-web.vercel.app)** — a new incident will automatically ingest and appear in the Command Center within seconds, starting the SLA countdown timer.
+* Click into the new incident and try querying the Chronicle AI copilot:
 ```
 "What caused similar issues before?"
 ```
@@ -1047,7 +1047,7 @@ Open the new incident → click **Investigating** → **Mitigating** → **Resol
 | 📖 **Runbooks** | 7 pre-seeded runbooks with expandable steps · Create new ones with confidence thresholds |
 | 📋 **Postmortems** | Auto-generated drafts · Status workflow (Draft → In Review → Published) · Slideover panel |
 | 👥 **On-Call** | Active responder panel · Go On-Call/Off-Call toggle · Weekly rotation grid |
-| 💻 **Agent Fleet** | Host monitoring data from connected Sentinel Agents |
+| 💻 **Agent Fleet** | Host monitoring data from connected Chronicle Agents |
 | ⚙️ **Settings** | SLA policy editor (per severity) · Webhook integration URLs · Org configuration |
 
 ### Option B — Run Locally
@@ -1062,9 +1062,9 @@ Right: http://localhost:3002/demo
 - In ShopFlow chaos panel → activate **"Payment Timeout"**
 - Hit the checkout or call `localhost:3002/api/payments` directly
 
-**3. Watch Sentinel react**
+**3. Watch Chronicle react**
 - A new P1 or P2 incident appears in the Command Center within seconds
-- The ingestion source health dot lights up for `sentinel-agent`
+- The ingestion source health dot lights up for `chronicle-agent`
 - SLA Countdown Tracker starts in the sidebar
 
 **4. Open the Incident Detail page and interact with the AI**
@@ -1089,9 +1089,9 @@ All SLA targets are **configurable per organization** through the Settings dashb
 
 <div align="center">
 
-**Sentinel** · Built with TypeScript, Groq, Supabase pgvector, Mem0, and a lot of `pnpm dev`
+**Chronicle** · Built with TypeScript, Groq, Supabase pgvector, Mem0, and a lot of `pnpm dev`
 
-*Most incident tools store tickets. Sentinel stores learnings.*
+*Most incident tools store tickets. Chronicle stores learnings.*
 
 ---
 

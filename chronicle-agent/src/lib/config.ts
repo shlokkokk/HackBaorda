@@ -1,13 +1,13 @@
-import * as dotenv from 'dotenv';
+﻿import * as dotenv from 'dotenv';
 import * as os from 'os';
-import * as shared from '@sentinel/shared';
+import * as shared from '@chronicle/shared';
 const isValidOrgId = shared.isValidOrgId || (shared as any).default?.isValidOrgId;
 const orgIdValidationError = shared.orgIdValidationError || (shared as any).default?.orgIdValidationError;
 
 dotenv.config();
 
 export const config = {
-  webhookUrl: process.env.SENTINEL_WEBHOOK_URL || 'http://localhost:3001/api/webhooks/ingest',
+  webhookUrl: process.env.CHRONICLE_WEBHOOK_URL || 'http://localhost:3001/api/webhooks/ingest',
   webhookSecret: process.env.WEBHOOK_SECRET || '',
   orgId: process.env.ORG_ID || '',
   checkIntervalMs: parseInt(process.env.CHECK_INTERVAL_MS || '10000'),
@@ -24,7 +24,7 @@ export const config = {
   disabledCollectors: (process.env.DISABLED_COLLECTORS || '').split(',').map(c => c.trim()).filter(Boolean),
   hostname: process.env.HOSTNAME_OVERRIDE || os.hostname(),
   logLevel: process.env.LOG_LEVEL || 'info',
-  dataDir: process.env.DATA_DIR || './.sentinel-agent',
+  dataDir: process.env.DATA_DIR || './.chronicle-agent',
 };
 
 // Validate required config
@@ -45,6 +45,6 @@ export function validateConfig() {
 
   if (!config.webhookSecret) {
     console.warn('⚠️ WEBHOOK_SECRET is empty. Signature verification might fail on backend.');
-    console.warn('   Copy WEBHOOK_SECRET from apps/api/.env into sentinel-agent/.env');
+    console.warn('   Copy WEBHOOK_SECRET from apps/api/.env into chronicle-agent/.env');
   }
 }

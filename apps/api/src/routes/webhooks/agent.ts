@@ -1,22 +1,22 @@
-// ═══════════════════════════════════════════════════════════
-// Sentinel Agent Webhook Handler — Alerts + Heartbeats
+﻿// ═══════════════════════════════════════════════════════════
+// Chronicle Agent Webhook Handler — Alerts + Heartbeats
 // ═══════════════════════════════════════════════════════════
 
 import type { Request, Response } from 'express';
 import { getSupabase } from '../../db/client.js';
 import { logger } from '../../lib/logger.js';
-import { generateFingerprint } from '@sentinel/shared';
+import { generateFingerprint } from '@chronicle/shared';
 import { checkDuplicate } from '../../services/deduplication.js';
 import { calculateBreachAt, getOrgSLAConfig } from '../../services/sla.js';
 import { recordSourcePing } from '../../services/ingestionHealth.js';
 import { eventBus } from '../../services/events.js';
-import type { Incident, SentinelAgentAlertPayload, SentinelAgentHeartbeatPayload, Severity } from '@sentinel/shared';
+import type { Incident, ChronicleAgentAlertPayload, ChronicleAgentHeartbeatPayload, Severity } from '@chronicle/shared';
 import { validateOrgIdForIngestion } from '../../lib/orgValidation.js';
 
-const log = logger.child({ source: 'sentinel-agent' });
+const log = logger.child({ source: 'chronicle-agent' });
 
 export async function handleAgentWebhook(
-  payload: SentinelAgentAlertPayload | SentinelAgentHeartbeatPayload,
+  payload: ChronicleAgentAlertPayload | ChronicleAgentHeartbeatPayload,
   _req: Request,
   res: Response
 ): Promise<void> {
@@ -30,10 +30,10 @@ export async function handleAgentWebhook(
 
   // ─── HEARTBEAT ─────────────────────────────────────
   if (payload.type === 'heartbeat') {
-    const hb = payload as SentinelAgentHeartbeatPayload;
+    const hb = payload as ChronicleAgentHeartbeatPayload;
     log.debug({ hostname: hb.source.hostname, seq: hb.sequence_number }, 'Heartbeat received');
 
-    await recordSourcePing(orgId, 'sentinel-agent', false);
+    await recordSourcePing(orgId, 'chronicle-agent', false);
 
     // Upsert host record
     const supabase = getSupabase();
@@ -59,7 +59,7 @@ export async function handleAgentWebhook(
   }
 
   // ─── ALERT ─────────────────────────────────────────
-  const alert = payload as SentinelAgentAlertPayload;
+  const alert = payload as ChronicleAgentAlertPayload;
   log.info({
     hostname: alert.source.hostname,
     alertTitle: alert.alert.title,
@@ -67,7 +67,7 @@ export async function handleAgentWebhook(
     sigma: alert.metric.baseline?.sigma ?? null,
   }, 'Agent alert received');
 
-  await recordSourcePing(orgId, 'sentinel-agent', true);
+  await recordSourcePing(orgId, 'chronicle-agent', true);
 
   // If alert is "resolved" status, find and resolve matching incident
   if (alert.alert.status === 'resolved') {
@@ -76,7 +76,7 @@ export async function handleAgentWebhook(
       .from('incidents')
       .select('*')
       .eq('org_id', orgId)
-      .eq('source', 'sentinel-agent')
+      .eq('source', 'chronicle-agent')
       .eq('fingerprint', alert.alert.fingerprint)
       .in('status', ['open', 'investigating', 'mitigating'])
       .single();
@@ -111,7 +111,7 @@ export async function handleAgentWebhook(
   const existing = await checkDuplicate(orgId, {
     title, description, severity,
     affected_services: [alert.alert.service],
-    source: 'sentinel-agent',
+    source: 'chronicle-agent',
     source_id: alert.id,
     fingerprint,
   });
@@ -133,12 +133,12 @@ export async function handleAgentWebhook(
       description,
       severity,
       status: 'open',
-      source: 'sentinel-agent',
+      source: 'chronicle-agent',
       source_id: alert.id,
       affected_services: [alert.alert.service],
       tags: [
         'auto-detected',
-        'sentinel-agent',
+        'chronicle-agent',
         alert.metric.baseline ? `sigma-${Math.round(alert.metric.baseline.sigma)}` : 'static-threshold',
       ],
       fingerprint,

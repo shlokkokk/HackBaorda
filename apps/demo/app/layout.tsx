@@ -1,9 +1,9 @@
-import type { Metadata } from 'next';
+﻿import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
   title: 'ShopFlow — Modern E-Commerce Platform',
-  description: 'Sentinel demo victim application for live incident response demonstrations',
+  description: 'Chronicle demo victim application for live incident response demonstrations',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

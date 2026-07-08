@@ -1,16 +1,16 @@
-// ═══════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════
 // Sentry Webhook Handler + Normalization
 // ═══════════════════════════════════════════════════════════
 
 import type { Request, Response } from 'express';
 import { getSupabase } from '../../db/client.js';
 import { logger } from '../../lib/logger.js';
-import { generateFingerprint, sentryLevelToSeverity } from '@sentinel/shared';
+import { generateFingerprint, sentryLevelToSeverity } from '@chronicle/shared';
 import { checkDuplicate } from '../../services/deduplication.js';
 import { calculateBreachAt, getOrgSLAConfig } from '../../services/sla.js';
 import { recordSourcePing } from '../../services/ingestionHealth.js';
 import { eventBus } from '../../services/events.js';
-import type { Incident, SentryPayload } from '@sentinel/shared';
+import type { Incident, SentryPayload } from '@chronicle/shared';
 import { validateOrgIdForIngestion } from '../../lib/orgValidation.js';
 
 const log = logger.child({ source: 'sentry' });

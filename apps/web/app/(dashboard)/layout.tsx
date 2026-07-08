@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -30,7 +30,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/15">
             <Shield className="h-4 w-4 text-primary" />
           </div>
-          <span className="text-base font-bold tracking-tight">Sentinel</span>
+          <span className="text-base font-bold tracking-tight">Chronicle</span>
         </div>
 
         <nav className="flex-1 space-y-0.5 overflow-y-auto p-3">

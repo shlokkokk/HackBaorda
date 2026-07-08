@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '@clerk/nextjs';
@@ -14,7 +14,7 @@ import {
   Printer,
   X,
 } from 'lucide-react';
-import type { Severity, IncidentSource } from '@sentinel/shared';
+import type { Severity, IncidentSource } from '@chronicle/shared';
 
 interface IncidentDetails {
   title: string;
@@ -191,7 +191,7 @@ export default function PostmortemsPage() {
           <div className="text-center py-16 text-muted-foreground glass rounded-xl">
             <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
             <p className="text-lg font-medium">No postmortems archived</p>
-            <p className="text-sm font-light mt-1">Postmortems are automatically drafted by Sentinel AI when you resolve incidents.</p>
+            <p className="text-sm font-light mt-1">Postmortems are automatically drafted by Chronicle AI when you resolve incidents.</p>
           </div>
         ) : (
           filteredPms.map((pm) => {

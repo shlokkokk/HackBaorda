@@ -1,4 +1,4 @@
-// ═══════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════
 // Incident Types
 // ═══════════════════════════════════════════════════════════
 
@@ -14,7 +14,7 @@ export type IncidentStatus =
 export type IncidentSource =
   | 'uptimerobot'
   | 'sentry'
-  | 'sentinel-agent'
+  | 'chronicle-agent'
   | 'slack'
   | 'manual'
   | 'github';

@@ -1,4 +1,4 @@
-// ═══════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════
 // Agent Query Route — Chat with the AI agent per incident
 // ═══════════════════════════════════════════════════════════
 
@@ -6,9 +6,9 @@ import { Router } from 'express';
 import { getSupabase } from '../db/client.js';
 import { authMiddleware, requireOrg } from '../middleware/auth.js';
 import { AppError } from '../middleware/errorHandler.js';
-import { AgentQuerySchema } from '@sentinel/shared';
+import { AgentQuerySchema } from '@chronicle/shared';
 import { runAgent } from '../agent/orchestrator.js';
-import type { Incident } from '@sentinel/shared';
+import type { Incident } from '@chronicle/shared';
 
 export function createAgentRoutes(): Router {
   const router = Router();

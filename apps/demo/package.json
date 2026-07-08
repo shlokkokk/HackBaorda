@@ -1,8 +1,8 @@
-{
-  "name": "@sentinel/demo",
+﻿{
+  "name": "@chronicle/demo",
   "version": "1.0.0",
   "private": true,
-  "description": "ShopFlow — Sentinel demo victim application for live incident demos",
+  "description": "ShopFlow — Chronicle demo victim application for live incident demos",
   "scripts": {
     "dev": "next dev --port 3002",
     "build": "next build",

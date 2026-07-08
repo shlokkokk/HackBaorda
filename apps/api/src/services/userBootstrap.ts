@@ -1,4 +1,4 @@
-// ═══════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════
 // User Bootstrap — Ensure Clerk users are linked to an org
 // Works without Clerk webhooks (common in local dev)
 // ═══════════════════════════════════════════════════════════
@@ -68,7 +68,7 @@ export async function ensureUserProvisioned(
     if (!orgId) {
       const { data: newOrg, error } = await supabase
         .from('orgs')
-        .insert({ name: resolvedProfile.name ? `${resolvedProfile.name}'s Workspace` : 'Sentinel DevOps' })
+        .insert({ name: resolvedProfile.name ? `${resolvedProfile.name}'s Workspace` : 'Chronicle DevOps' })
         .select()
         .single();
 

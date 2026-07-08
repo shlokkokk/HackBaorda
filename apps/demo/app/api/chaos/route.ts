@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+﻿import { NextRequest, NextResponse } from 'next/server';
 import {
   getDemoState,
   resetAllScenarios,
@@ -7,7 +7,7 @@ import {
   type ChaosScenario,
   SCENARIO_META,
 } from '@/lib/demo-state';
-import { notifySentinel } from '@/lib/sentinel-notify';
+import { notifyChronicle } from '@/lib/chronicle-notify';
 
 export const dynamic = 'force-dynamic';
 
@@ -33,9 +33,9 @@ export async function POST(req: NextRequest) {
     const results = await Promise.all(
       (Object.keys(prev.scenarios) as ChaosScenario[])
         .filter((s) => prev.scenarios[s])
-        .map((s) => notifySentinel(s, false))
+        .map((s) => notifyChronicle(s, false))
     );
-    return NextResponse.json({ state, sentinel: results });
+    return NextResponse.json({ state, chronicle: results });
   }
 
   if (!body.scenario || !VALID_SCENARIOS.includes(body.scenario)) {
@@ -51,15 +51,15 @@ export async function POST(req: NextRequest) {
     active = state.scenarios[body.scenario];
   }
 
-  const sentinel = await notifySentinel(body.scenario, active);
+  const chronicle = await notifyChronicle(body.scenario, active);
 
   return NextResponse.json({
     state: getDemoState(),
-    sentinel,
-    message: sentinel.ok
+    chronicle,
+    message: chronicle.ok
       ? active
-        ? `Incident created in Sentinel dashboard`
-        : `Incident resolved in Sentinel dashboard`
-      : sentinel.error,
+        ? `Incident created in Chronicle dashboard`
+        : `Incident resolved in Chronicle dashboard`
+      : chronicle.error,
   });
 }

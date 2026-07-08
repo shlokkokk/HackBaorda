@@ -1,4 +1,4 @@
-// ═══════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════
 // Slack Webhook Handler — Slash Commands + Event Subscriptions
 // ═══════════════════════════════════════════════════════════
 
@@ -11,8 +11,8 @@ import { sendSlackMessage } from '../../services/slack.js';
 import { getIngestionHealth } from '../../services/ingestionHealth.js';
 import { calculateBreachAt, getOrgSLAConfig } from '../../services/sla.js';
 import { eventBus } from '../../services/events.js';
-import { generateFingerprint } from '@sentinel/shared';
-import type { Incident, IncidentStatus } from '@sentinel/shared';
+import { generateFingerprint } from '@chronicle/shared';
+import type { Incident, IncidentStatus } from '@chronicle/shared';
 
 const log = logger.child({ source: 'slack-webhook' });
 
@@ -117,7 +117,7 @@ export async function handleSlackWebhook(req: Request, res: Response): Promise<v
 
   if (!org) {
     res.status(200).json({
-      text: `⚠️ This Slack workspace is not linked to any Sentinel organization.\nGo to Sentinel settings and configure Slack Workspace ID: \`${teamId}\`.`
+      text: `⚠️ This Slack workspace is not linked to any Chronicle organization.\nGo to Chronicle settings and configure Slack Workspace ID: \`${teamId}\`.`
     });
     return;
   }
@@ -130,7 +130,7 @@ export async function handleSlackWebhook(req: Request, res: Response): Promise<v
       case 'new': {
         const title = args.slice(1).join(' ');
         if (!title) {
-          res.status(200).json({ text: '❌ Please specify a title: `/sentinel new [Incident Title]`' });
+          res.status(200).json({ text: '❌ Please specify a title: `/chronicle new [Incident Title]`' });
           return;
         }
 
@@ -236,7 +236,7 @@ export async function handleSlackWebhook(req: Request, res: Response): Promise<v
       case 'resolve': {
         const idSearch = args[1];
         if (!idSearch) {
-          res.status(200).json({ text: '❌ Please specify the incident ID: `/sentinel resolve [Incident ID]`' });
+          res.status(200).json({ text: '❌ Please specify the incident ID: `/chronicle resolve [Incident ID]`' });
           return;
         }
 
@@ -314,12 +314,12 @@ export async function handleSlackWebhook(req: Request, res: Response): Promise<v
 
       default: {
         res.status(200).json({
-          text: `ℹ️ *Sentinel AI Slash Commands Usage*:\n` +
-                `• \`/sentinel new [Title]\` — Programmatically report a new incident\n` +
-                `• \`/sentinel status\` — List all active open incidents\n` +
-                `• \`/sentinel resolve [Incident ID]\` — Mark active incident resolved\n` +
-                `• \`/sentinel sources\` — Output all monitored ingestion channel healths\n` +
-                `• \`/sentinel help\` — Display this instructions helper list`
+          text: `ℹ️ *Chronicle AI Slash Commands Usage*:\n` +
+                `• \`/chronicle new [Title]\` — Programmatically report a new incident\n` +
+                `• \`/chronicle status\` — List all active open incidents\n` +
+                `• \`/chronicle resolve [Incident ID]\` — Mark active incident resolved\n` +
+                `• \`/chronicle sources\` — Output all monitored ingestion channel healths\n` +
+                `• \`/chronicle help\` — Display this instructions helper list`
         });
         return;
       }

@@ -1,15 +1,15 @@
-// ═══════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════
 // GitHub Issues Webhook Handler
 // ═══════════════════════════════════════════════════════════
 
 import type { Request, Response } from 'express';
 import { getSupabase } from '../../db/client.js';
 import { logger } from '../../lib/logger.js';
-import { generateFingerprint } from '@sentinel/shared';
+import { generateFingerprint } from '@chronicle/shared';
 import { recordSourcePing } from '../../services/ingestionHealth.js';
 import { calculateBreachAt, getOrgSLAConfig } from '../../services/sla.js';
 import { eventBus } from '../../services/events.js';
-import type { GitHubIssuePayload, Incident } from '@sentinel/shared';
+import type { GitHubIssuePayload, Incident } from '@chronicle/shared';
 import { validateOrgIdForIngestion } from '../../lib/orgValidation.js';
 
 const log = logger.child({ source: 'github' });

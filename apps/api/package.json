@@ -1,5 +1,5 @@
-{
-  "name": "@sentinel/api",
+﻿{
+  "name": "@chronicle/api",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -16,7 +16,7 @@
     "@langchain/community": "^0.3.0",
     "@langchain/core": "^0.3.0",
     "@langchain/groq": "^0.1.0",
-    "@sentinel/shared": "workspace:*",
+    "@chronicle/shared": "workspace:*",
     "@slack/bolt": "^4.1.0",
     "@supabase/supabase-js": "^2.47.0",
     "@upstash/ratelimit": "^2.0.0",

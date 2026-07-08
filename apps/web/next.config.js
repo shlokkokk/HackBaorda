@@ -1,6 +1,6 @@
-/** @type {import('next').NextConfig} */
+﻿/** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ['@sentinel/shared'],
+  transpilePackages: ['@chronicle/shared'],
   experimental: {
     optimizePackageImports: ['lucide-react', 'recharts', 'framer-motion'],
   },

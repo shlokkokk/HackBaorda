@@ -1,11 +1,11 @@
-// ═══════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════
 // SLA Engine — Configurable per org, per severity
 // ═══════════════════════════════════════════════════════════
 
 import { getSupabase } from '../db/client.js';
 import { logger } from '../lib/logger.js';
-import { DEFAULT_SLA, formatDuration, SLA_CRITICAL_THRESHOLD } from '@sentinel/shared';
-import type { Severity, SLAConfig } from '@sentinel/shared';
+import { DEFAULT_SLA, formatDuration, SLA_CRITICAL_THRESHOLD } from '@chronicle/shared';
+import type { Severity, SLAConfig } from '@chronicle/shared';
 
 const log = logger.child({ service: 'sla' });
 

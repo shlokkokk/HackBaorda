@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '@clerk/nextjs';
@@ -117,7 +117,7 @@ export default function SettingsPage() {
     { name: 'UptimeRobot Alert Ingest', path: '/api/webhooks/uptimerobot', description: 'Trigger alerts on site down detection.' },
     { name: 'Sentry Issues Webhook', path: '/api/webhooks/sentry', description: 'Deduplicate codebase exceptions.' },
     { name: 'GitHub Issues Webhook', path: '/api/webhooks/github', description: 'Create incidents from labeled issues.' },
-    { name: 'Sentinel Monitoring Agent API', path: '/api/webhooks/ingest', description: 'Accept host metric heartbeats and alerts.' },
+    { name: 'Chronicle Monitoring Agent API', path: '/api/webhooks/ingest', description: 'Accept host metric heartbeats and alerts.' },
   ];
 
   return (

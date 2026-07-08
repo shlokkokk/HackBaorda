@@ -1,4 +1,4 @@
-// ═══════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════
 // Rate Limiting Middleware — Upstash Redis
 // ═══════════════════════════════════════════════════════════
 
@@ -22,7 +22,7 @@ function getRateLimiter(): Ratelimit | null {
         `${config.rateLimit.windowMs}ms` as `${number} ms`
       ),
       analytics: true,
-      prefix: 'sentinel:ratelimit',
+      prefix: 'chronicle:ratelimit',
     });
   }
   return rateLimiter;

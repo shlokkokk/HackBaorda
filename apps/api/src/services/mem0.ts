@@ -1,4 +1,4 @@
-// ═══════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════
 // Mem0 Client — AI Memory Layer
 // ═══════════════════════════════════════════════════════════
 
@@ -7,7 +7,7 @@ import MemoryClient from 'mem0ai';
 import { config } from '../lib/config.js';
 import { logger } from '../lib/logger.js';
 import { withTimeout } from '../lib/timeout.js';
-import type { MemoryResult, MemoryMetadata } from '@sentinel/shared';
+import type { MemoryResult, MemoryMetadata } from '@chronicle/shared';
 
 const MEM0_TIMEOUT_MS = 4_000;
 

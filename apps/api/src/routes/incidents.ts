@@ -1,4 +1,4 @@
-// ═══════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════
 // Incident Routes — CRUD + State Machine + SLA
 // ═══════════════════════════════════════════════════════════
 
@@ -7,13 +7,13 @@ import { getSupabase } from '../db/client.js';
 import { authMiddleware, requireOrg } from '../middleware/auth.js';
 import { rateLimit } from '../middleware/rateLimit.js';
 import { AppError } from '../middleware/errorHandler.js';
-import { CreateIncidentSchema, UpdateIncidentSchema, IncidentFilterSchema, STATUS_TRANSITIONS } from '@sentinel/shared';
+import { CreateIncidentSchema, UpdateIncidentSchema, IncidentFilterSchema, STATUS_TRANSITIONS } from '@chronicle/shared';
 import { checkDuplicate, attachFingerprint } from '../services/deduplication.js';
 import { calculateBreachAt, getOrgSLAConfig } from '../services/sla.js';
 import { recordSourcePing } from '../services/ingestionHealth.js';
 import { eventBus } from '../services/events.js';
 import { logger } from '../lib/logger.js';
-import type { Incident, IncidentStatus } from '@sentinel/shared';
+import type { Incident, IncidentStatus } from '@chronicle/shared';
 
 const log = logger.child({ route: 'incidents' });
 

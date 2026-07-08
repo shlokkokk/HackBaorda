@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+﻿import { createClient } from '@supabase/supabase-js';
 import * as dotenv from 'dotenv';
 
 dotenv.config({ path: 'apps/api/.env' });
@@ -14,7 +14,7 @@ const INCIDENTS = [
     status: 'resolved',
     affected_services: ['payments-api', 'gateway'],
     tags: ['auto-detected', 'high-priority'],
-    source: 'sentinel-agent',
+    source: 'chronicle-agent',
     root_cause: 'Postgres connection pool limit exceeded under high load.',
     resolution: 'Scaled postgres max connection pool to 200 using pgBouncer.',
     created_offset_min: 180, // minutes ago
@@ -39,7 +39,7 @@ const INCIDENTS = [
     status: 'mitigating',
     affected_services: ['postgres-primary'],
     tags: ['auto-detected', 'cpu-spike'],
-    source: 'sentinel-agent',
+    source: 'chronicle-agent',
     created_offset_min: 12,
     sla_offset_min: 3 // P0 target is 15m
   },
@@ -50,7 +50,7 @@ const INCIDENTS = [
     status: 'resolved',
     affected_services: ['payments-ui'],
     tags: ['docker-alert', 'crash'],
-    source: 'sentinel-agent',
+    source: 'chronicle-agent',
     root_cause: 'Webpack chunk size increase led to memory leak in production container.',
     resolution: 'Restarted container with memory limits bumped to 1Gi.',
     created_offset_min: 720,
@@ -114,7 +114,7 @@ const INCIDENTS = [
     status: 'resolved',
     affected_services: ['cache'],
     tags: ['auto-detected', 'redis'],
-    source: 'sentinel-agent',
+    source: 'chronicle-agent',
     root_cause: 'Cache eviction policy set to volatile-lru instead of allkeys-lru.',
     resolution: 'Modified redis config to eviction policy allkeys-lru and run defrag.',
     created_offset_min: 300,
@@ -150,10 +150,10 @@ async function run() {
 
     let orgId: string;
     if (!orgs || orgs.length === 0) {
-      console.log('🌱 No organization found, creating "Sentinel DevOps" default org...');
+      console.log('🌱 No organization found, creating "Chronicle DevOps" default org...');
       const { data: newOrg, error: createError } = await client
         .from('orgs')
-        .insert({ name: 'Sentinel DevOps' })
+        .insert({ name: 'Chronicle DevOps' })
         .select()
         .single();
       if (createError || !newOrg) throw createError || new Error('Failed to create default org');

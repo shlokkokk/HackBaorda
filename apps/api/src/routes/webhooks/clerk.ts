@@ -1,4 +1,4 @@
-// ═══════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════
 // Clerk Webhook Handler — User Sync
 // ═══════════════════════════════════════════════════════════
 
@@ -36,7 +36,7 @@ export async function handleClerkWebhook(
       let orgId = existingUser?.org_id as string | undefined;
 
       if (!orgId && eventType === 'user.created') {
-        const orgName = name ? `${name}'s Workspace` : email ? `${email.split('@')[0]}'s Workspace` : 'Sentinel Workspace';
+        const orgName = name ? `${name}'s Workspace` : email ? `${email.split('@')[0]}'s Workspace` : 'Chronicle Workspace';
         const { data: org, error: orgError } = await supabase
           .from('orgs')
           .insert({ name: orgName })

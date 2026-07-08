@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '@clerk/nextjs';
@@ -122,7 +122,7 @@ export default function AgentsFleetPage() {
           <div className="text-center py-16 text-muted-foreground glass rounded-xl">
             <Server className="w-12 h-12 mx-auto mb-3 opacity-50" />
             <p className="text-lg font-medium">No agents connected</p>
-            <p className="text-sm font-light mt-1">Follow setup instructions to install Sentinel Agent on your servers.</p>
+            <p className="text-sm font-light mt-1">Follow setup instructions to install Chronicle Agent on your servers.</p>
           </div>
         ) : (
           hosts.map((host) => {

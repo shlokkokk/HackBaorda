@@ -1,4 +1,4 @@
-// ═══════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════
 // Webhook Types — All ingestion source payloads
 // ═══════════════════════════════════════════════════════════
 
@@ -66,15 +66,15 @@ export interface GitHubIssuePayload {
   };
 }
 
-/** Sentinel Agent alert payload v2.0 */
-export interface SentinelAgentAlertPayload {
+/** Chronicle Agent alert payload v2.0 */
+export interface ChronicleAgentAlertPayload {
   version: string;
   type: 'alert' | 'heartbeat';
   id: string;
   timestamp: string;
   correlation_id: string;
   source: {
-    type: 'sentinel-agent';
+    type: 'chronicle-agent';
     version: string;
     hostname: string;
     host_id: string;
@@ -117,8 +117,8 @@ export interface SentinelAgentAlertPayload {
   metadata: Record<string, unknown>;
 }
 
-/** Sentinel Agent heartbeat payload */
-export interface SentinelAgentHeartbeatPayload {
+/** Chronicle Agent heartbeat payload */
+export interface ChronicleAgentHeartbeatPayload {
   version: string;
   type: 'heartbeat';
   timestamp: string;

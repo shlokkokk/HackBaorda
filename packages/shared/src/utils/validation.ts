@@ -1,4 +1,4 @@
-// ═══════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════
 // Zod Validation Schemas
 // ═══════════════════════════════════════════════════════════
 
@@ -9,7 +9,7 @@ export const IncidentStatusSchema = z.enum([
   'open', 'investigating', 'mitigating', 'resolved', 'postmortem',
 ]);
 export const IncidentSourceSchema = z.enum([
-  'uptimerobot', 'sentry', 'sentinel-agent', 'slack', 'manual', 'github',
+  'uptimerobot', 'sentry', 'chronicle-agent', 'slack', 'manual', 'github',
 ]);
 export const UserRoleSchema = z.enum(['admin', 'responder', 'viewer']);
 

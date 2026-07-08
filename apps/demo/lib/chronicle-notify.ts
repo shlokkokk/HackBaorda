@@ -1,18 +1,18 @@
-import type { ChaosScenario } from './demo-state';
+﻿import type { ChaosScenario } from './demo-state';
 import { SCENARIO_META } from './demo-state';
 
-const API_URL = process.env.SENTINEL_API_URL ?? 'http://localhost:3001';
-const ORG_ID = process.env.SENTINEL_ORG_ID ?? '';
-const WEBHOOK_SECRET = process.env.SENTINEL_WEBHOOK_SECRET ?? '';
+const API_URL = process.env.CHRONICLE_API_URL ?? 'http://localhost:3001';
+const ORG_ID = process.env.CHRONICLE_ORG_ID ?? '';
+const WEBHOOK_SECRET = process.env.CHRONICLE_WEBHOOK_SECRET ?? '';
 
-export async function notifySentinel(
+export async function notifyChronicle(
   scenario: ChaosScenario,
   active: boolean
 ): Promise<{ ok: boolean; incidentId?: string; error?: string }> {
   if (!ORG_ID || !WEBHOOK_SECRET) {
     return {
       ok: false,
-      error: 'Demo app not linked to Sentinel. Run: pnpm setup:demo',
+      error: 'Demo app not linked to Chronicle. Run: pnpm setup:demo',
     };
   }
 
@@ -31,7 +31,7 @@ export async function notifySentinel(
         active,
         label: meta.label,
         severity: meta.severity,
-        sentinel_source: meta.sentinelSource,
+        chronicle_source: meta.chronicleSource,
       }),
     });
 

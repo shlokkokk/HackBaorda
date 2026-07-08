@@ -1,11 +1,11 @@
-// ═══════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════
 // Deduplication Service — Fingerprint-based incident merging
 // ═══════════════════════════════════════════════════════════
 
 import { getSupabase } from '../db/client.js';
 import { logger } from '../lib/logger.js';
-import { generateFingerprint } from '@sentinel/shared';
-import type { CreateIncidentInput, Incident } from '@sentinel/shared';
+import { generateFingerprint } from '@chronicle/shared';
+import type { CreateIncidentInput, Incident } from '@chronicle/shared';
 
 const log = logger.child({ service: 'deduplication' });
 

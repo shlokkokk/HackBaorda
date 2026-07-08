@@ -1,4 +1,4 @@
-import { config } from '../lib/config.js';
+﻿import { config } from '../lib/config.js';
 import { logger } from '../lib/logger.js';
 import type { Alert } from '../engine/alertEngine.js';
 import type { CircuitBreaker } from './circuitBreaker.js';
@@ -57,7 +57,7 @@ export class BatchSender {
       correlation_id: correlationId,
       org_id: config.orgId,
       source: {
-        type: 'sentinel-agent',
+        type: 'chronicle-agent',
         version: '1.0.0',
         hostname: config.hostname,
         host_id: crypto.createHash('sha256').update(config.hostname).digest('hex'),
@@ -98,7 +98,7 @@ export class BatchSender {
       this.circuitBreaker.recordSuccess();
       return true;
     } catch (err) {
-      logger.error('Failed to post alert to Sentinel Webhook', err);
+      logger.error('Failed to post alert to Chronicle Webhook', err);
       this.circuitBreaker.recordFailure();
       return false;
     }
@@ -106,7 +106,7 @@ export class BatchSender {
 
   private async sendBatch(alerts: Alert[]) {
     this.sequenceNumber++;
-    logger.info(`Sending batch #${this.sequenceNumber} to Sentinel...`, { size: alerts.length });
+    logger.info(`Sending batch #${this.sequenceNumber} to Chronicle...`, { size: alerts.length });
 
     // Send alerts in batch or individually (backend expects individual /ingest endpoint alerts)
     // Wait, the backend endpoint handleAgentWebhook accepts one Alert / Heartbeat per request:

@@ -1,4 +1,4 @@
-// ═══════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════
 // Ingestion Health Types
 // ═══════════════════════════════════════════════════════════
 
@@ -41,7 +41,7 @@ export interface Host {
 export const INGESTION_STALENESS = {
   uptimerobot: 10 * 60 * 1000,    // 10 minutes (monitors every 5 min)
   sentry: 30 * 60 * 1000,         // 30 minutes (errors are sporadic)
-  'sentinel-agent': 2 * 60 * 1000, // 2 minutes (heartbeat every 30s)
+  'chronicle-agent': 2 * 60 * 1000, // 2 minutes (heartbeat every 30s)
   slack: Infinity,                  // always "connected" when bot is installed
   manual: Infinity,                 // always available
   github: 60 * 60 * 1000,          // 1 hour

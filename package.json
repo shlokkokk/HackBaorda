@@ -1,8 +1,8 @@
-{
-  "name": "sentinel",
+﻿{
+  "name": "chronicle",
   "version": "1.0.0",
   "private": true,
-  "description": "Sentinel — AI-Powered Incident Response Intelligence Platform",
+  "description": "Chronicle — AI-Powered Incident Response Intelligence Platform",
   "packageManager": "pnpm@9.15.0",
   "scripts": {
     "dev": "turbo dev",
@@ -11,10 +11,10 @@
     "typecheck": "turbo typecheck",
     "test": "turbo test",
     "clean": "turbo clean",
-    "dev:web": "turbo dev --filter=@sentinel/web",
-    "dev:api": "turbo dev --filter=@sentinel/api",
-    "dev:agent": "turbo dev --filter=@sentinel/agent",
-    "dev:demo": "turbo dev --filter=@sentinel/demo",
+    "dev:web": "turbo dev --filter=@chronicle/web",
+    "dev:api": "turbo dev --filter=@chronicle/api",
+    "dev:agent": "turbo dev --filter=@chronicle/agent",
+    "dev:demo": "turbo dev --filter=@chronicle/demo",
     "db:setup": "tsx scripts/setup-db.ts",
     "db:seed": "tsx scripts/seed-incidents.ts && tsx scripts/seed-runbooks.ts && tsx scripts/train-ai-demo.ts",
     "ai:train": "tsx scripts/train-ai-demo.ts",

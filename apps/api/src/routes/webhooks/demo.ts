@@ -1,5 +1,5 @@
-// ═══════════════════════════════════════════════════════════
-// ShopFlow Demo App Webhook — Creates real incidents in Sentinel
+﻿// ═══════════════════════════════════════════════════════════
+// ShopFlow Demo App Webhook — Creates real incidents in Chronicle
 // ═══════════════════════════════════════════════════════════
 
 import type { Request, Response } from 'express';
@@ -10,7 +10,7 @@ import { checkDuplicate } from '../../services/deduplication.js';
 import { calculateBreachAt, getOrgSLAConfig } from '../../services/sla.js';
 import { recordSourcePing } from '../../services/ingestionHealth.js';
 import { eventBus } from '../../services/events.js';
-import type { Incident, IncidentSource, Severity } from '@sentinel/shared';
+import type { Incident, IncidentSource, Severity } from '@chronicle/shared';
 
 const log = logger.child({ source: 'demo-app' });
 
@@ -19,7 +19,7 @@ export interface DemoScenarioPayload {
   active: boolean;
   label?: string;
   severity?: string;
-  sentinel_source?: string;
+  chronicle_source?: string;
 }
 
 const SCENARIO_DEFAULTS: Record<
@@ -36,7 +36,7 @@ const SCENARIO_DEFAULTS: Record<
   payment_timeout: {
     title: '[ShopFlow] API Gateway timeout on /payments',
     description: 'Payment route returned 504 Gateway Timeout after 8s. Pool may be exhausted.',
-    source: 'sentinel-agent',
+    source: 'chronicle-agent',
     severity: 'P1',
     services: ['payments-api', 'gateway'],
   },
@@ -64,7 +64,7 @@ const SCENARIO_DEFAULTS: Record<
   gateway_overload: {
     title: '[ShopFlow] Database connection pool exhausted',
     description: 'All API routes returning 503. Gateway connection pool at 100% capacity.',
-    source: 'sentinel-agent',
+    source: 'chronicle-agent',
     severity: 'P0',
     services: ['postgres-primary', 'gateway'],
   },
@@ -93,7 +93,7 @@ export async function handleDemoWebhook(
     return;
   }
 
-  const source = (payload.sentinel_source as IncidentSource) ?? defaults.source;
+  const source = (payload.chronicle_source as IncidentSource) ?? defaults.source;
   await recordSourcePing(orgId, source, true);
 
   const supabase = getSupabase();

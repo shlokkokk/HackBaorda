@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '@clerk/nextjs';
@@ -175,7 +175,7 @@ export default function RunbooksPage() {
           <div className="col-span-full text-center py-16 text-muted-foreground glass rounded-xl">
             <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
             <p className="text-lg font-medium">No runbooks found</p>
-            <p className="text-sm">Create a runbook to help Sentinel resolve incidents automatically.</p>
+            <p className="text-sm">Create a runbook to help Chronicle resolve incidents automatically.</p>
           </div>
         ) : (
           filteredRunbooks.map((rb) => {

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
@@ -45,7 +45,7 @@ export default function StorePage() {
               Welcome to <span className="gradient-text">ShopFlow</span>
             </h1>
             <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
-              A realistic e-commerce platform wired for Sentinel incident demos. Browse products, test checkout, or open the Chaos Panel.
+              A realistic e-commerce platform wired for Chronicle incident demos. Browse products, test checkout, or open the Chaos Panel.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
               <Link

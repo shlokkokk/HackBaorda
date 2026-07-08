@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useCallback, useState } from 'react';
 import { useAuth } from '@clerk/nextjs';
@@ -12,8 +12,8 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { cn, timeAgo } from '../../../lib/utils';
-import type { IngestionHealth, Incident } from '@sentinel/shared';
-import { ALL_SOURCES } from '@sentinel/shared';
+import type { IngestionHealth, Incident } from '@chronicle/shared';
+import { ALL_SOURCES } from '@chronicle/shared';
 
 interface OverviewStats {
   total_incidents: number;
@@ -26,7 +26,7 @@ interface OverviewStats {
 }
 
 const SOURCE_ICONS: Record<string, typeof Shield> = {
-  'sentinel-agent': Shield,
+  'chronicle-agent': Shield,
   sentry: Bug,
   uptimerobot: Globe,
   slack: MessageSquare,

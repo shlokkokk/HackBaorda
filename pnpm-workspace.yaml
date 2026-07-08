@@ -1,4 +1,4 @@
-packages:
+﻿packages:
   - "apps/*"
   - "packages/*"
-  - "sentinel-agent"
+  - "chronicle-agent"

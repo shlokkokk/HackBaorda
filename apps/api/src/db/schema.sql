@@ -1,4 +1,4 @@
--- ═══════════════════════════════════════════════════════════
+﻿-- ═══════════════════════════════════════════════════════════
 -- SENTINEL — Complete Database Schema
 -- Run this in Supabase SQL Editor
 -- ═══════════════════════════════════════════════════════════
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS incidents (
   resolved_at TIMESTAMPTZ,
   mem0_memory_ids TEXT[] DEFAULT '{}',
   embedding VECTOR(1536),
-  source TEXT DEFAULT 'manual' CHECK (source IN ('uptimerobot', 'sentry', 'sentinel-agent', 'slack', 'manual', 'github')),
+  source TEXT DEFAULT 'manual' CHECK (source IN ('uptimerobot', 'sentry', 'chronicle-agent', 'slack', 'manual', 'github')),
   source_id TEXT,
   fingerprint TEXT,
   merged_from TEXT[] DEFAULT '{}',
@@ -106,7 +106,7 @@ CREATE TABLE IF NOT EXISTS agent_interactions (
 CREATE TABLE IF NOT EXISTS ingestion_health (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   org_id UUID REFERENCES orgs(id) ON DELETE CASCADE,
-  source TEXT NOT NULL CHECK (source IN ('uptimerobot', 'sentry', 'sentinel-agent', 'slack', 'manual', 'github')),
+  source TEXT NOT NULL CHECK (source IN ('uptimerobot', 'sentry', 'chronicle-agent', 'slack', 'manual', 'github')),
   status TEXT DEFAULT 'healthy' CHECK (status IN ('healthy', 'stale', 'down')),
   last_ping_at TIMESTAMPTZ DEFAULT now(),
   last_incident_at TIMESTAMPTZ,

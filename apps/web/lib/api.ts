@@ -1,5 +1,5 @@
-// ═══════════════════════════════════════════════════════════
-// API Client — Typed fetch wrapper for the Sentinel backend
+﻿// ═══════════════════════════════════════════════════════════
+// API Client — Typed fetch wrapper for the Chronicle backend
 // ═══════════════════════════════════════════════════════════
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';

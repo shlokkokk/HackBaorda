@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+﻿import { createClient } from '@supabase/supabase-js';
 import * as dotenv from 'dotenv';
 
 dotenv.config({ path: 'apps/api/.env' });
@@ -77,10 +77,10 @@ async function run() {
 
     let orgId: string;
     if (!orgs || orgs.length === 0) {
-      console.log('🌱 No organization found, creating "Sentinel DevOps" default org...');
+      console.log('🌱 No organization found, creating "Chronicle DevOps" default org...');
       const { data: newOrg, error: createError } = await client
         .from('orgs')
-        .insert({ name: 'Sentinel DevOps' })
+        .insert({ name: 'Chronicle DevOps' })
         .select()
         .single();
       if (createError || !newOrg) throw createError || new Error('Failed to create default org');

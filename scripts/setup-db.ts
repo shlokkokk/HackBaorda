@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+﻿import { createClient } from '@supabase/supabase-js';
 import * as dotenv from 'dotenv';
 
 dotenv.config({ path: 'apps/api/.env' });
@@ -27,7 +27,7 @@ async function run() {
       if (orgs && orgs.length > 0) {
         console.log('\n📋 Organizations in database:');
         orgs.forEach((o) => console.log(`   • ${o.name} → ${o.id}`));
-        console.log('\n👉 Run  pnpm setup:agent  to auto-configure sentinel-agent/.env');
+        console.log('\n👉 Run  pnpm setup:agent  to auto-configure chronicle-agent/.env');
       } else {
         console.log('\n👉 No orgs yet. Sign up at http://localhost:3000 then run  pnpm setup:agent');
       }

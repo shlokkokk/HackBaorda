@@ -1,11 +1,11 @@
-// ═══════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════
 // Ingestion Health Service — Track source status
 // ═══════════════════════════════════════════════════════════
 
 import { getSupabase } from '../db/client.js';
 import { logger } from '../lib/logger.js';
-import { INGESTION_STALENESS, ALL_SOURCES, isValidOrgId } from '@sentinel/shared';
-import type { IncidentSource, IngestionHealth } from '@sentinel/shared';
+import { INGESTION_STALENESS, ALL_SOURCES, isValidOrgId } from '@chronicle/shared';
+import type { IncidentSource, IngestionHealth } from '@chronicle/shared';
 
 const log = logger.child({ service: 'ingestion-health' });
 

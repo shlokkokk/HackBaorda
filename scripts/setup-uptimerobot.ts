@@ -1,4 +1,4 @@
-// ═══════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════
 // UptimeRobot Setup Helper Script
 // ═══════════════════════════════════════════════════════════
 
@@ -8,8 +8,8 @@ dotenv.config({ path: 'apps/api/.env' });
 
 const apiKey = process.env.UPTIMEROBOT_API_KEY;
 const webhookSecret = process.env.UPTIMEROBOT_WEBHOOK_SECRET;
-const demoUrl = process.env.DEMO_APP_URL ?? 'https://sentinel-demo.vercel.app';
-const apiPrefix = process.env.NEXT_PUBLIC_APP_URL ?? 'https://sentinel-api.onrender.com';
+const demoUrl = process.env.DEMO_APP_URL ?? 'https://chronicle-demo.vercel.app';
+const apiPrefix = process.env.NEXT_PUBLIC_APP_URL ?? 'https://chronicle-api.onrender.com';
 
 async function run() {
   console.log('🏁 Starting UptimeRobot Programmatic Monitor Provisioning...\n');
@@ -18,22 +18,22 @@ async function run() {
   console.log(`- UPTIMEROBOT_API_KEY:        ${apiKey ? '✅ Configured' : '❌ Missing'}`);
   console.log(`- UPTIMEROBOT_WEBHOOK_SECRET: ${webhookSecret ? '✅ Configured' : '❌ Missing'}`);
   console.log(`- DEMO_APP_URL:               ${demoUrl} (URL to monitor)`);
-  console.log(`- NEXT_PUBLIC_APP_URL:        ${apiPrefix} (Sentinel URL)`);
+  console.log(`- NEXT_PUBLIC_APP_URL:        ${apiPrefix} (Chronicle URL)`);
 
   if (!apiKey || !webhookSecret) {
     console.log('\n📋 MANUAL CONFIGURATION STEPS (Since API key is missing):');
     console.log('1. Register for a free account at https://uptimerobot.com');
     console.log('2. Go to "My Settings" -> scroll down to "API Settings" -> generate "Main API Key".');
     console.log('3. Go to "Alert Contacts" -> "Add Alert Contact" -> type: Webhook:');
-    console.log(`   - Friendly Name: Sentinel Ingest`);
+    console.log(`   - Friendly Name: Chronicle Ingest`);
     console.log(`   - URL to Notify:  ${apiPrefix}/api/webhooks/uptimerobot?secret=<YOUR_WEBHOOK_SECRET>`);
     console.log('   - POST Value (JSON format): Select this option');
     console.log('4. Go to "Dashboard" -> "Add New Monitor":');
     console.log(`   - Monitor Type:  HTTP(s)`);
-    console.log(`   - Friendly Name: Sentinel Demo App`);
+    console.log(`   - Friendly Name: Chronicle Demo App`);
     console.log(`   - URL/IP:        ${demoUrl}/api/health`);
     console.log('   - Monitoring Interval: 5 minutes');
-    console.log('   - Select the Sentinel Ingest Alert Contact checkbox.');
+    console.log('   - Select the Chronicle Ingest Alert Contact checkbox.');
     return;
   }
 
@@ -47,7 +47,7 @@ async function run() {
       body: new URLSearchParams({
         api_key: apiKey,
         type: '5', // Webhook
-        friendly_name: 'Sentinel Webhook Alert Contact',
+        friendly_name: 'Chronicle Webhook Alert Contact',
         value: webhookUrl,
       }),
     });
@@ -77,13 +77,13 @@ async function run() {
       return;
     }
 
-    console.log(`\n🖥️ Step 2: Creating HTTP Monitor for Sentinel Demo App...`);
+    console.log(`\n🖥️ Step 2: Creating HTTP Monitor for Chronicle Demo App...`);
     const monitorRes = await fetch('https://api.uptimerobot.com/v2/newMonitor', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
         api_key: apiKey,
-        friendly_name: 'Sentinel Demo App Status',
+        friendly_name: 'Chronicle Demo App Status',
         url: `${demoUrl}/api/health`,
         type: '1', // HTTP
         interval: '300', // 5 minutes

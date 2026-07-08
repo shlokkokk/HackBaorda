@@ -1,11 +1,11 @@
-// ═══════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════
 // Slack Service — Bolt SDK Integration
 // ═══════════════════════════════════════════════════════════
 
 import { config } from '../lib/config.js';
 import { logger } from '../lib/logger.js';
-import type { Incident } from '@sentinel/shared';
-import { SEVERITY_CONFIG, SOURCE_CONFIG } from '@sentinel/shared';
+import type { Incident } from '@chronicle/shared';
+import { SEVERITY_CONFIG, SOURCE_CONFIG } from '@chronicle/shared';
 
 const log = logger.child({ service: 'slack' });
 
@@ -101,7 +101,7 @@ export async function sendIncidentSlackAlert(
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: `🤖 *Sentinel AI:*\n${agentResponse.substring(0, 500)}`,
+          text: `🤖 *Chronicle AI:*\n${agentResponse.substring(0, 500)}`,
         },
       }
     );

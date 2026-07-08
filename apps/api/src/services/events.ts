@@ -1,14 +1,14 @@
-// ═══════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════
 // Event Bus — Decoupled event-driven architecture
 // ═══════════════════════════════════════════════════════════
 
 import { EventEmitter } from 'events';
 import { logger } from '../lib/logger.js';
-import type { Incident } from '@sentinel/shared';
+import type { Incident } from '@chronicle/shared';
 
 const log = logger.child({ service: 'events' });
 
-export interface SentinelEvents {
+export interface ChronicleEvents {
   'incident.created': { incident: Incident; orgId: string };
   'incident.updated': { incident: Incident; orgId: string; changes: Record<string, unknown> };
   'incident.resolved': { incident: Incident; orgId: string };
@@ -19,18 +19,18 @@ export interface SentinelEvents {
   'memory.written': { orgId: string; incidentId: string; memoryId: string };
 }
 
-class SentinelEventBus extends EventEmitter {
-  emitEvent<K extends keyof SentinelEvents>(
+class ChronicleEventBus extends EventEmitter {
+  emitEvent<K extends keyof ChronicleEvents>(
     event: K,
-    data: SentinelEvents[K]
+    data: ChronicleEvents[K]
   ): void {
     log.debug({ event, data: JSON.stringify(data).substring(0, 200) }, `Event: ${event}`);
     this.emit(event, data);
   }
 
-  onEvent<K extends keyof SentinelEvents>(
+  onEvent<K extends keyof ChronicleEvents>(
     event: K,
-    handler: (data: SentinelEvents[K]) => void | Promise<void>
+    handler: (data: ChronicleEvents[K]) => void | Promise<void>
   ): void {
     this.on(event, async (data) => {
       try {
@@ -43,7 +43,7 @@ class SentinelEventBus extends EventEmitter {
 }
 
 // Singleton event bus
-export const eventBus = new SentinelEventBus();
+export const eventBus = new ChronicleEventBus();
 
 // Increase max listeners for production use
 eventBus.setMaxListeners(50);

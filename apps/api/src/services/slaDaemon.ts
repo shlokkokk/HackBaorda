@@ -1,4 +1,4 @@
-// ═══════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════
 // SLA Auto-Escalation Daemon
 // Runs in the background to monitor open incidents,
 // handle SLA breaches, and enforce severity auto-escalation.
@@ -10,7 +10,7 @@ import { config } from '../lib/config.js';
 import { eventBus } from './events.js';
 import { calculateBreachAt, getOrgSLAConfig } from './sla.js';
 import { sendSlackMessage } from './slack.js';
-import type { Severity, Incident } from '@sentinel/shared';
+import type { Severity, Incident } from '@chronicle/shared';
 
 const log = logger.child({ service: 'sla-daemon' });
 

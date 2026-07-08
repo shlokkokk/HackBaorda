@@ -1,4 +1,4 @@
-// ═══════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════
 // Unified Webhook Router — All source handlers
 // ═══════════════════════════════════════════════════════════
 
@@ -17,7 +17,7 @@ import {
   verifySentrySignature,
   verifyClerkSignature,
   verifyUptimeRobotSignature,
-  verifySentinelAgentSignature,
+  verifyChronicleAgentSignature,
 } from '../../middleware/webhookValidation.js';
 
 const log = logger.child({ route: 'webhooks' });
@@ -26,7 +26,7 @@ export function createWebhookRoutes(): Router {
   const router = Router();
 
   // ─── UNIFIED INGEST ENDPOINT ──────────────────────
-  router.post('/ingest', verifySentinelAgentSignature, async (req, res, next) => {
+  router.post('/ingest', verifyChronicleAgentSignature, async (req, res, next) => {
     try {
       const rawBody = req.body instanceof Buffer ? req.body.toString() : JSON.stringify(req.body);
       const payload = JSON.parse(rawBody);
@@ -90,7 +90,7 @@ export function createWebhookRoutes(): Router {
   });
 
   // ─── HEARTBEAT ENDPOINT ──────────────────────────
-  router.post('/heartbeat', verifySentinelAgentSignature, async (req, res, next) => {
+  router.post('/heartbeat', verifyChronicleAgentSignature, async (req, res, next) => {
     try {
       const rawBody = req.body instanceof Buffer ? req.body.toString() : JSON.stringify(req.body);
       const payload = JSON.parse(rawBody);

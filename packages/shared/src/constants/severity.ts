@@ -1,4 +1,4 @@
-// ═══════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════
 // Severity Constants & Utilities
 // ═══════════════════════════════════════════════════════════
 
@@ -69,7 +69,7 @@ export function compareSeverity(a: Severity, b: Severity): number {
   return SEVERITY_CONFIG[a].priority - SEVERITY_CONFIG[b].priority;
 }
 
-/** Map Sentry level to Sentinel severity */
+/** Map Sentry level to Chronicle severity */
 export function sentryLevelToSeverity(level: string): Severity {
   switch (level) {
     case 'fatal': return 'P0';

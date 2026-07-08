@@ -1,5 +1,5 @@
-# 🚀 Sentinel Quick-Start Guide
-> Follow these steps in order to boot up the Sentinel platform, connect your accounts, and seed test data.
+﻿# 🚀 Chronicle Quick-Start Guide
+> Follow these steps in order to boot up the Chronicle platform, connect your accounts, and seed test data.
 
 ---
 
@@ -26,7 +26,7 @@ We use a unified developer loop that starts the backend API, the Next.js dashboa
    * *Verify: Keep this terminal open. It will launch:*
      * Backend API on **`http://localhost:3001`**
      * Frontend Dashboard on **`http://localhost:3000`**
-     * Sentinel Host Agent running in watch-mode
+     * Chronicle Host Agent running in watch-mode
 
 ---
 
@@ -49,8 +49,8 @@ Now that your organization is registered in the database, we can seed the test d
    ```bash
    pnpm setup:agent
    ```
-   This writes the correct `ORG_ID` and syncs `WEBHOOK_SECRET` into `sentinel-agent/.env`.
-   *Alternatively*, manually copy the org UUID from Supabase into `sentinel-agent/.env` as `ORG_ID=...`.
+   This writes the correct `ORG_ID` and syncs `WEBHOOK_SECRET` into `chronicle-agent/.env`.
+   *Alternatively*, manually copy the org UUID from Supabase into `chronicle-agent/.env` as `ORG_ID=...`.
 4. In a new terminal window in the project root, run the seeding script:
    ```bash
    pnpm db:seed
@@ -72,12 +72,12 @@ Now that your organization is registered in the database, we can seed the test d
 ---
 
 ### STEP 6: Launch the ShopFlow Demo App
-The victim app lets you trigger live failures that flow into Sentinel.
+The victim app lets you trigger live failures that flow into Chronicle.
 
 1. Open **`http://localhost:3002`** — the ShopFlow storefront.
 2. Go to **`http://localhost:3002/demo`** — the Chaos Engineering Panel.
 3. Activate a scenario (e.g. **Payment Gateway Timeout**), then visit Checkout and click Pay.
-4. Watch the new incident appear in the Sentinel dashboard.
+4. Watch the new incident appear in the Chronicle dashboard.
 5. Click **Reset All** when done to restore healthy state.
 
-Optional: set `NEXT_PUBLIC_SENTRY_DSN` in `apps/demo/.env.local` to route JS errors to Sentry → Sentinel webhook.
+Optional: set `NEXT_PUBLIC_SENTRY_DSN` in `apps/demo/.env.local` to route JS errors to Sentry → Chronicle webhook.

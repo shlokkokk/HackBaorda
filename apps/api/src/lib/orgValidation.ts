@@ -1,8 +1,8 @@
-// ═══════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════
 // Organization ID validation for webhooks and ingestion
 // ═══════════════════════════════════════════════════════════
 
-import { orgIdValidationError } from '@sentinel/shared';
+import { orgIdValidationError } from '@chronicle/shared';
 import { getSupabase } from '../db/client.js';
 import { logger } from './logger.js';
 

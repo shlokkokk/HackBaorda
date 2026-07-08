@@ -1,4 +1,4 @@
-// ═══════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════
 // Slack Application Setup Helper Script
 // ═══════════════════════════════════════════════════════════
 
@@ -24,9 +24,9 @@ async function run() {
   console.log('2. Under "OAuth & Permissions" add the following Bot Token Scopes:');
   console.log('   - chat:write, chat:write.public, commands, channels:read, im:write, users:read');
   console.log('3. Under "Slash Commands", create command:');
-  console.log('   - Command:     /sentinel');
+  console.log('   - Command:     /chronicle');
   console.log('   - Request URL:  https://<your-backend-url>/api/webhooks/slack');
-  console.log('   - Description:  Manage incidents with Sentinel');
+  console.log('   - Description:  Manage incidents with Chronicle');
   console.log('4. Under "Event Subscriptions", enable events and subscribe to:');
   console.log('   - message.channels (for thread replies)');
   console.log('   - Request URL:  https://<your-backend-url>/api/webhooks/slack');

@@ -1,4 +1,4 @@
-// ═══════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════
 // Webhook Security Validation Middleware
 // ═══════════════════════════════════════════════════════════
 
@@ -160,12 +160,12 @@ export function verifyUptimeRobotSignature(req: Request, _res: Response, next: N
 }
 
 /**
- * Verify Sentinel Agent metrics / alerts endpoint webhook secret
+ * Verify Chronicle Agent metrics / alerts endpoint webhook secret
  */
-export function verifySentinelAgentSignature(req: Request, _res: Response, next: NextFunction) {
+export function verifyChronicleAgentSignature(req: Request, _res: Response, next: NextFunction) {
   const isDevBypass = config.nodeEnv !== 'production' && !config.webhooks.secret;
   if (isDevBypass) {
-    log.warn('Dev Mode: Sentinel Agent Webhook Secret missing, bypassing authorization validation.');
+    log.warn('Dev Mode: Chronicle Agent Webhook Secret missing, bypassing authorization validation.');
     return next();
   }
 
@@ -181,7 +181,7 @@ export function verifySentinelAgentSignature(req: Request, _res: Response, next:
     const incomingSecret = token ?? webhookSecretHeader;
 
     if (!incomingSecret || incomingSecret !== config.webhooks.secret) {
-      throw new AppError(401, 'Invalid or missing Sentinel Agent webhook secret key authorization.');
+      throw new AppError(401, 'Invalid or missing Chronicle Agent webhook secret key authorization.');
     }
     next();
   } catch (err) {

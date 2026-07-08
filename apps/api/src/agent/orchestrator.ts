@@ -1,4 +1,4 @@
-// ═══════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════
 // Agent Orchestrator — Fast Groq responses with parallel prefetch
 // ═══════════════════════════════════════════════════════════
 
@@ -11,7 +11,7 @@ import { searchMemories } from '../services/mem0.js';
 import { searchSimilarIncidents, searchSimilarRunbooks } from '../services/embeddings.js';
 import { getSLAStatus } from '../services/sla.js';
 import { SYSTEM_PROMPT } from './prompts/system.js';
-import type { AgentResponse, Incident, MemoryResult } from '@sentinel/shared';
+import type { AgentResponse, Incident, MemoryResult } from '@chronicle/shared';
 
 const log = logger.child({ service: 'agent-orchestrator' });
 

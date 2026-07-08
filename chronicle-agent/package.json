@@ -1,5 +1,5 @@
-{
-  "name": "@sentinel/agent",
+﻿{
+  "name": "@chronicle/agent",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@sentinel/shared": "workspace:*",
+    "@chronicle/shared": "workspace:*",
     "dotenv": "^16.4.0",
     "systeminformation": "^5.23.0"
   },

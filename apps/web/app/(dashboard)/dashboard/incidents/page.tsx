@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '@clerk/nextjs';
@@ -14,8 +14,8 @@ import {
   AlertCircle, Wrench, CheckCircle2, BookOpen,
   Shield, Bug, Globe, MessageSquare, Github, Terminal
 } from 'lucide-react';
-import { SEVERITY_CONFIG, STATUS_CONFIG, SOURCE_CONFIG } from '@sentinel/shared';
-import type { Incident, Severity } from '@sentinel/shared';
+import { SEVERITY_CONFIG, STATUS_CONFIG, SOURCE_CONFIG } from '@chronicle/shared';
+import type { Incident, Severity } from '@chronicle/shared';
 
 const STATUS_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   open: AlertCircle,
@@ -26,7 +26,7 @@ const STATUS_ICONS: Record<string, React.ComponentType<{ className?: string }>> 
 };
 
 const SOURCE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
-  'sentinel-agent': Shield,
+  'chronicle-agent': Shield,
   sentry: Bug,
   uptimerobot: Globe,
   slack: MessageSquare,

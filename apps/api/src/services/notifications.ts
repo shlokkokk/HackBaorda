@@ -1,12 +1,12 @@
-// ═══════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════
 // Notifications Service — Email via Resend
 // ═══════════════════════════════════════════════════════════
 
 import { Resend } from 'resend';
 import { config } from '../lib/config.js';
 import { logger } from '../lib/logger.js';
-import type { Incident } from '@sentinel/shared';
-import { SEVERITY_CONFIG } from '@sentinel/shared';
+import type { Incident } from '@chronicle/shared';
+import { SEVERITY_CONFIG } from '@chronicle/shared';
 
 const log = logger.child({ service: 'notifications' });
 
@@ -38,7 +38,7 @@ export async function sendIncidentEmail(
     const severityConfig = SEVERITY_CONFIG[incident.severity];
 
     await resend.emails.send({
-      from: 'Sentinel <alerts@sentinel.app>',
+      from: 'Chronicle <alerts@chronicle.app>',
       to,
       subject: `${severityConfig.icon} [${incident.severity}] ${incident.title}`,
       html: `
@@ -57,7 +57,7 @@ export async function sendIncidentEmail(
             </p>
           </div>
           <a href="${config.appUrl}/incidents/${incident.id}" style="display: inline-block; margin-top: 20px; padding: 12px 24px; background: #3b82f6; color: white; text-decoration: none; border-radius: 8px; font-weight: 600;">
-            View in Sentinel →
+            View in Chronicle →
           </a>
         </div>
       `,

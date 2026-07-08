@@ -1,4 +1,4 @@
-// ═══════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════
 // Agent Tool Registry — All 10 tools as LangChain tools
 // ═══════════════════════════════════════════════════════════
 
@@ -10,9 +10,9 @@ import { searchSimilarIncidents, searchSimilarRunbooks, storeIncidentEmbedding }
 import { getSLAStatus } from '../../services/sla.js';
 import { sendSlackMessage } from '../../services/slack.js';
 import { getSupabase } from '../../db/client.js';
-import { SEVERITY_CONFIG, STATUS_TRANSITIONS } from '@sentinel/shared';
+import { SEVERITY_CONFIG, STATUS_TRANSITIONS } from '@chronicle/shared';
 import { POSTMORTEM_PROMPT } from '../prompts/system.js';
-import type { Incident } from '@sentinel/shared';
+import type { Incident } from '@chronicle/shared';
 
 export function createAgentTools(orgId: string, incident: Incident) {
   // ─── Tool 1: Search Memory ─────────────────────────

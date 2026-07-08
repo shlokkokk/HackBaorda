@@ -1,4 +1,4 @@
-// ═══════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════
 // Org Routes — Organization Management
 // ═══════════════════════════════════════════════════════════
 
@@ -6,7 +6,7 @@ import { Router } from 'express';
 import { getSupabase } from '../db/client.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { AppError } from '../middleware/errorHandler.js';
-import { CreateOrgSchema } from '@sentinel/shared';
+import { CreateOrgSchema } from '@chronicle/shared';
 import { initializeIngestionHealth } from '../services/ingestionHealth.js';
 import { logger } from '../lib/logger.js';
 

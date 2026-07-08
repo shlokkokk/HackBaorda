@@ -1,4 +1,4 @@
-// ═══════════════════════════════════════════════════════════
+﻿// ═══════════════════════════════════════════════════════════
 // Structured Logger — Pino (production-grade, not console.log)
 // ═══════════════════════════════════════════════════════════
 
@@ -18,7 +18,7 @@ export const logger = pino({
         },
       },
   base: {
-    service: 'sentinel-api',
+    service: 'chronicle-api',
     version: '1.0.0',
   },
   serializers: {

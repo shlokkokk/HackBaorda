@@ -1,4 +1,4 @@
-// Sync ShopFlow demo app env with Sentinel API + org from agent setup
+﻿// Sync ShopFlow demo app env with Chronicle API + org from agent setup
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -6,7 +6,7 @@ import * as path from 'path';
 dotenv.config({ path: 'apps/api/.env' });
 
 const demoEnvPath = path.join('apps', 'demo', '.env.local');
-const agentEnvPath = path.join('sentinel-agent', '.env');
+const agentEnvPath = path.join('chronicle-agent', '.env');
 
 function readEnv(filePath: string): Record<string, string> {
   if (!fs.existsSync(filePath)) return {};
@@ -33,7 +33,7 @@ async function run() {
   const agentEnv = readEnv(agentEnvPath);
   const existing = readEnv(demoEnvPath);
 
-  const orgId = agentEnv['ORG_ID'] ?? existing['SENTINEL_ORG_ID'] ?? '';
+  const orgId = agentEnv['ORG_ID'] ?? existing['CHRONICLE_ORG_ID'] ?? '';
   const webhookSecret = apiEnv['WEBHOOK_SECRET'] ?? agentEnv['WEBHOOK_SECRET'] ?? '';
   const apiUrl = apiEnv['API_URL'] ?? 'http://localhost:3001';
 
@@ -44,18 +44,18 @@ async function run() {
 
   const updated = {
     ...existing,
-    SENTINEL_API_URL: apiUrl,
-    SENTINEL_ORG_ID: orgId,
-    SENTINEL_WEBHOOK_SECRET: webhookSecret,
-    NEXT_PUBLIC_SENTINEL_DASHBOARD_URL: apiEnv['NEXT_PUBLIC_APP_URL'] ?? 'http://localhost:3000',
+    CHRONICLE_API_URL: apiUrl,
+    CHRONICLE_ORG_ID: orgId,
+    CHRONICLE_WEBHOOK_SECRET: webhookSecret,
+    NEXT_PUBLIC_CHRONICLE_DASHBOARD_URL: apiEnv['NEXT_PUBLIC_APP_URL'] ?? 'http://localhost:3000',
   };
 
   writeEnv(demoEnvPath, updated);
 
   console.log(`✅ Wrote ${demoEnvPath}`);
-  console.log(`   SENTINEL_ORG_ID=${orgId}`);
-  console.log(`   SENTINEL_API_URL=${apiUrl}`);
-  console.log(`   SENTINEL_WEBHOOK_SECRET=***${webhookSecret.slice(-6)}`);
+  console.log(`   CHRONICLE_ORG_ID=${orgId}`);
+  console.log(`   CHRONICLE_API_URL=${apiUrl}`);
+  console.log(`   CHRONICLE_WEBHOOK_SECRET=***${webhookSecret.slice(-6)}`);
   console.log('\n👉 Restart pnpm dev — chaos panel buttons will create live incidents.');
 }
 
