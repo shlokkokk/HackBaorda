@@ -31,8 +31,8 @@ const SOURCE_ICONS: Record<string, React.ComponentType<{ className?: string }>> 
   github: Github,
   manual: Terminal,
 };
-import { SEVERITY_CONFIG, STATUS_CONFIG, SOURCE_CONFIG, STATUS_TRANSITIONS } from '@sentinel/shared';
-import type { Incident, IncidentStatus, AgentInteraction } from '@sentinel/shared';
+import { SEVERITY_CONFIG, STATUS_CONFIG, SOURCE_CONFIG, STATUS_TRANSITIONS } from '@chronicle/shared';
+import type { Incident, IncidentStatus, AgentInteraction } from '@chronicle/shared';
 
 export default function IncidentDetailPage() {
   const { id } = useParams<{ id: string }>();
