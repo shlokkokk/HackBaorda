@@ -1,4 +1,4 @@
-﻿# 🚀 Chronicle Quick-Start Guide
+# 🚀 Chronicle Quick-Start Guide
 > Follow these steps in order to boot up the Chronicle platform, connect your accounts, and seed test data.
 
 ---

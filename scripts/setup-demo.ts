@@ -1,4 +1,4 @@
-﻿// Sync ShopFlow demo app env with Chronicle API + org from agent setup
+// Sync ShopFlow demo app env with Chronicle API + org from agent setup
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
 import * as path from 'path';

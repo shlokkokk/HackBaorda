@@ -1,4 +1,4 @@
-﻿import { config, validateConfig } from './lib/config.js';
+import { config, validateConfig } from './lib/config.js';
 import { logger } from './lib/logger.js';
 import { captureSystemSnapshot } from './collectors/index.js';
 import { BaselineLearner } from './baseline/learner.js';

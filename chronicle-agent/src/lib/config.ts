@@ -1,4 +1,4 @@
-﻿import * as dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 import * as os from 'os';
 import * as shared from '@chronicle/shared';
 const isValidOrgId = shared.isValidOrgId || (shared as any).default?.isValidOrgId;

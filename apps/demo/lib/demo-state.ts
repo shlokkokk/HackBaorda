@@ -1,4 +1,4 @@
-﻿/**
+/**
  * In-memory chaos state for the ShopFlow demo victim app.
  * Toggled via /api/chaos — resets on server restart.
  */

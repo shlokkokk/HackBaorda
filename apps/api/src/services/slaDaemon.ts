@@ -1,4 +1,4 @@
-﻿// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
 // SLA Auto-Escalation Daemon
 // Runs in the background to monitor open incidents,
 // handle SLA breaches, and enforce severity auto-escalation.

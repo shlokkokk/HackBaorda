@@ -1,4 +1,4 @@
-﻿import type { ChaosScenario } from './demo-state';
+import type { ChaosScenario } from './demo-state';
 import { SCENARIO_META } from './demo-state';
 
 const API_URL = process.env.CHRONICLE_API_URL ?? 'http://localhost:3001';

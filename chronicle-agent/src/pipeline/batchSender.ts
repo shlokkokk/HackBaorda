@@ -1,4 +1,4 @@
-﻿import { config } from '../lib/config.js';
+import { config } from '../lib/config.js';
 import { logger } from '../lib/logger.js';
 import type { Alert } from '../engine/alertEngine.js';
 import type { CircuitBreaker } from './circuitBreaker.js';

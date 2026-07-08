@@ -1,4 +1,4 @@
-﻿import si from 'systeminformation';
+import si from 'systeminformation';
 import os from 'os';
 import { logger } from '../lib/logger.js';
 import { config } from '../lib/config.js';
