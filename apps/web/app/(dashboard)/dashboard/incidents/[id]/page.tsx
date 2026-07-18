@@ -24,7 +24,7 @@ const STATUS_ICONS: Record<string, React.ComponentType<{ className?: string }>> 
 };
 
 const SOURCE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
-  'sentinel-agent': Shield,
+  'chronicle-agent': Shield,
   sentry: Bug,
   uptimerobot: Globe,
   slack: MessageSquare,

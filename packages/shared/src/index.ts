@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════
-// SENTINEL — Shared Type Definitions
+// CHRONICLE — Shared Type Definitions
 // All types used across frontend, backend, and agent
 // ═══════════════════════════════════════════════════════════
 
