@@ -21,7 +21,7 @@
 
 <div align="center">
 
-# SENTINEL
+# CHRONICLE
 
 ### AI-Native Incident Response & Operational Memory Platform
 
