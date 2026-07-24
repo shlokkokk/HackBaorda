@@ -11,7 +11,7 @@
 >
 > The demo video doesn't reflect the project we actually built. We recorded the demo in separate clips — different parts of the project, one at a time — with the plan to combine them into one clean 5-7 minute walkthrough before submitting. But the laptop we had available just couldn't handle the video editing — it kept crashing, the software struggled with the files, and we were running out of time fast. On top of that, the network connection at the venue was painfully slow, so even uploading the raw clips was a battle. In the chaos of the deadline, the video ended up going out as-is — clips not properly joined, out of order, with the beginning missing context and the ending cut short. It genuinely stings, because we know the first thing you'll see is that video, and it does not represent the project the way we wanted it to.
 >
-> But the project itself? It's real, complete, and **fully deployed and live right now.** The Chronicle dashboard is running at **[chronicle-io.vercel.app](https://chronicle-io.vercel.app)**, the API backend is on **[Render](https://chronicle-api-c28t.onrender.com/api/health)**, and the ShopFlow chaos demo app is fully live and running at **[chronicle-app-demo.vercel.app](https://chronicle-app-demo.vercel.app)**. We didn't just build it locally — we shipped it to production. Everything works end-to-end: dual-layer AI memory (Mem0 + pgvector), a 70B parameter LLM pipeline via Groq, a live chaos demo app with 8 triggerable scenarios, auto-escalating SLA enforcement, Slack integration, postmortem generation, analytics dashboards — the whole thing.
+> But the project itself? It's real, complete, and **fully deployed and live right now.** The Chronicle dashboard is running at **[chronicle-io.vercel.app](https://chronicle-io.vercel.app)**, the API backend is on **[Render](https://sentinel-api-c28t.onrender.com/api/health)**, and the ShopFlow chaos demo app is fully live and running at **[chronicle-app-demo.vercel.app](https://chronicle-app-demo.vercel.app)**. We didn't just build it locally — we shipped it to production. Everything works end-to-end: dual-layer AI memory (Mem0 + pgvector), a 70B parameter LLM pipeline via Groq, a live chaos demo app with 8 triggerable scenarios, auto-escalating SLA enforcement, Slack integration, postmortem generation, analytics dashboards — the whole thing.
 >
 > So please — if the video doesn't make sense — **give the code and this README a fair read.** Everything is documented here: every feature, every AI capability, every architectural decision. The **[🎬 Demo Playbook for Judges](#-demo-playbook-for-judges)** section gives you a step-by-step walkthrough of the live system — you can open the deployed URLs right now and see it all working.
 >
@@ -39,7 +39,7 @@
 ![Mem0](https://img.shields.io/badge/Mem0_Memory-6366F1?style=for-the-badge&logoColor=white)
 
 [![Dashboard Live](https://img.shields.io/badge/Dashboard-Live%20on%20Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://chronicle-io.vercel.app)
-[![API Live](https://img.shields.io/badge/API-Live%20on%20Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://chronicle-api-c28t.onrender.com/api/health)
+[![API Live](https://img.shields.io/badge/API-Live%20on%20Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://sentinel-api-c28t.onrender.com/api/health)
 [![Demo Live](https://img.shields.io/badge/Demo%20App-Live%20on%20Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://chronicle-app-demo.vercel.app)
 
 **Chronicle — AI & Developer Tools**
@@ -55,7 +55,7 @@
 | Service | URL | Platform |
 |---|---|---|
 | 🖥️ **Chronicle Dashboard** | [chronicle-io.vercel.app](https://chronicle-io.vercel.app) | Vercel |
-| ⚙️ **Chronicle API** | [chronicle-api-c28t.onrender.com](https://chronicle-api-c28t.onrender.com/api/health) | Render |
+| ⚙️ **Chronicle API** | [sentinel-api-c28t.onrender.com](https://sentinel-api-c28t.onrender.com/api/health) | Render |
 | 🛒 **ShopFlow Demo** | [chronicle-app-demo.vercel.app](https://chronicle-app-demo.vercel.app) | Vercel |
 
 > [!WARNING]

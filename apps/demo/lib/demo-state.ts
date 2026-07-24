@@ -32,7 +32,19 @@ let state: DemoState = {
   triggerCount: 0,
 };
 
+const SCENARIO_MAX_TTL_MS = 2 * 60 * 60 * 1000; // 2 hours auto-deactivation safety limit (leaves ample time for judges)
+
 export function getDemoState(): DemoState {
+  const now = Date.now();
+  (Object.keys(state.scenarios) as ChaosScenario[]).forEach((scenario) => {
+    if (state.scenarios[scenario] && state.lastTriggered[scenario]) {
+      const triggeredAt = new Date(state.lastTriggered[scenario]!).getTime();
+      if (now - triggeredAt > SCENARIO_MAX_TTL_MS) {
+        state.scenarios[scenario] = false;
+      }
+    }
+  });
+
   return {
     scenarios: { ...state.scenarios },
     lastTriggered: { ...state.lastTriggered },

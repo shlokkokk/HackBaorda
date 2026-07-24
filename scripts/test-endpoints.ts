@@ -1,7 +1,5 @@
 const urls = [
-  'https://chronicle-api-c28t.onrender.com/api/health',
-  'https://chronicle-api-c28t.onrender.com/health',
-  'https://chronicle-api-c28t.onrender.com/',
+  'https://sentinel-api-c28t.onrender.com/api/health',
   'https://chronicle-io.vercel.app/sign-in',
   'https://chronicle-app-demo.vercel.app/api/health',
   'https://chronicle-app-demo.vercel.app/api/chaos',
