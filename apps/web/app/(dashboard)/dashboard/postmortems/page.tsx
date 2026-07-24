@@ -196,7 +196,7 @@ export default function PostmortemsPage() {
         ) : (
           filteredPms.map((pm) => {
             const inc = pm.incidents;
-            const statusConfig = STATUS_LABELS[pm.review_status];
+            const statusConfig = STATUS_LABELS[pm.review_status] ?? STATUS_LABELS.draft;
 
             return (
               <motion.div
@@ -256,9 +256,9 @@ export default function PostmortemsPage() {
                     <span className="text-xs font-mono font-bold text-muted-foreground">Postmortem Document</span>
                     <span className={cn(
                       'px-2 py-0.5 rounded text-[10px] border font-semibold',
-                      STATUS_LABELS[activePm.review_status].color
+                      (STATUS_LABELS[activePm.review_status] ?? STATUS_LABELS.draft).color
                     )}>
-                      {STATUS_LABELS[activePm.review_status].label}
+                      {(STATUS_LABELS[activePm.review_status] ?? STATUS_LABELS.draft).label}
                     </span>
                   </div>
                   <h3 className="text-lg font-bold text-foreground mt-1">

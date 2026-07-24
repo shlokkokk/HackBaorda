@@ -247,7 +247,7 @@ export default function RunbooksPage() {
                           Steps & Automation Sequence
                         </h4>
                         <ol className="space-y-3">
-                          {rb.steps.map((step, idx) => (
+                          {(rb.steps ?? []).map((step, idx) => (
                             <li key={idx} className="flex gap-3 items-start text-sm">
                               <span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary/15 text-primary flex items-center justify-center font-bold text-xs">
                                 {idx + 1}

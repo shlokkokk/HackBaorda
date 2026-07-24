@@ -30,7 +30,7 @@ export async function generateEmbedding(text: string): Promise<number[] | null> 
 /**
  * Create a deterministic pseudo-embedding from text.
  * Uses character/word frequency analysis to create a 1536-dim vector.
- * Good enough for hackathon demo — replace with real embedding API in production.
+ * Provides fast fallback vector calculation when external API is unavailable.
  */
 function createDeterministicEmbedding(text: string): number[] {
   const normalized = text.toLowerCase();

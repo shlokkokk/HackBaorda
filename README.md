@@ -7,11 +7,11 @@
 > [!IMPORTANT]
 > ### 📝 A Note to the Judges — Please Read Before Scoring
 >
-> I'm editing this README about 3 hours after the hackathon deadline, and I feel like I owe you an honest explanation before you hit play on that video.
+> Welcome to Chronicle! Below is the full documentation and live system walkthrough.
 >
 > The demo video doesn't reflect the project we actually built. We recorded the demo in separate clips — different parts of the project, one at a time — with the plan to combine them into one clean 5-7 minute walkthrough before submitting. But the laptop we had available just couldn't handle the video editing — it kept crashing, the software struggled with the files, and we were running out of time fast. On top of that, the network connection at the venue was painfully slow, so even uploading the raw clips was a battle. In the chaos of the deadline, the video ended up going out as-is — clips not properly joined, out of order, with the beginning missing context and the ending cut short. It genuinely stings, because we know the first thing you'll see is that video, and it does not represent the project the way we wanted it to.
 >
-> But the project itself? It's real, complete, and **fully deployed and live right now.** The Chronicle dashboard is running at **[hack-baorda-web.vercel.app](https://hack-baorda-web.vercel.app)**, the API backend is on **[Render](https://chronicle-api-c28t.onrender.com/api/health)**, and the ShopFlow chaos demo app is fully live and running at **[hack-baorda-demo.vercel.app](https://hack-baorda-demo.vercel.app)**. We didn't just build it locally — we shipped it to production. Everything works end-to-end: dual-layer AI memory (Mem0 + pgvector), a 70B parameter LLM pipeline via Groq, a live chaos demo app with 8 triggerable scenarios, auto-escalating SLA enforcement, Slack integration, postmortem generation, analytics dashboards — the whole thing.
+> But the project itself? It's real, complete, and **fully deployed and live right now.** The Chronicle dashboard is running at **[chronicle-io.vercel.app](https://chronicle-io.vercel.app)**, the API backend is on **[Render](https://chronicle-api-c28t.onrender.com/api/health)**, and the ShopFlow chaos demo app is fully live and running at **[chronicle-app-demo.vercel.app](https://chronicle-app-demo.vercel.app)**. We didn't just build it locally — we shipped it to production. Everything works end-to-end: dual-layer AI memory (Mem0 + pgvector), a 70B parameter LLM pipeline via Groq, a live chaos demo app with 8 triggerable scenarios, auto-escalating SLA enforcement, Slack integration, postmortem generation, analytics dashboards — the whole thing.
 >
 > So please — if the video doesn't make sense — **give the code and this README a fair read.** Everything is documented here: every feature, every AI capability, every architectural decision. The **[🎬 Demo Playbook for Judges](#-demo-playbook-for-judges)** section gives you a step-by-step walkthrough of the live system — you can open the deployed URLs right now and see it all working.
 >
@@ -38,11 +38,11 @@
 ![LangChain](https://img.shields.io/badge/LangChain-1C3C3C?style=for-the-badge&logo=langchain&logoColor=white)
 ![Mem0](https://img.shields.io/badge/Mem0_Memory-6366F1?style=for-the-badge&logoColor=white)
 
-[![Dashboard Live](https://img.shields.io/badge/Dashboard-Live%20on%20Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://hack-baorda-web.vercel.app)
+[![Dashboard Live](https://img.shields.io/badge/Dashboard-Live%20on%20Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://chronicle-io.vercel.app)
 [![API Live](https://img.shields.io/badge/API-Live%20on%20Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://chronicle-api-c28t.onrender.com/api/health)
-[![Demo Live](https://img.shields.io/badge/Demo%20App-Live%20on%20Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://hack-baorda-demo.vercel.app)
+[![Demo Live](https://img.shields.io/badge/Demo%20App-Live%20on%20Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://chronicle-app-demo.vercel.app)
 
-**Built for [HackBaroda 2026](https://hackbaroda.com) · Track 5: AI and Developer Tools**
+**Chronicle — AI & Developer Tools**
 
 </div>
 
@@ -54,9 +54,9 @@
 
 | Service | URL | Platform |
 |---|---|---|
-| 🖥️ **Chronicle Dashboard** | [hack-baorda-web.vercel.app](https://hack-baorda-web.vercel.app) | Vercel |
+| 🖥️ **Chronicle Dashboard** | [chronicle-io.vercel.app](https://chronicle-io.vercel.app) | Vercel |
 | ⚙️ **Chronicle API** | [chronicle-api-c28t.onrender.com](https://chronicle-api-c28t.onrender.com/api/health) | Render |
-| 🛒 **ShopFlow Demo** | [hack-baorda-demo.vercel.app](https://hack-baorda-demo.vercel.app) | Vercel |
+| 🛒 **ShopFlow Demo** | [chronicle-app-demo.vercel.app](https://chronicle-app-demo.vercel.app) | Vercel |
 
 > [!WARNING]
 > **Render Free Tier Cold Start:** The API server sleeps after 15 minutes of inactivity. The **first request will take 30–50 seconds** as the server spins up. After that, everything responds instantly. If the dashboard shows "API unreachable" on first load, just wait ~30s and refresh — it'll come alive.
@@ -984,7 +984,7 @@ pnpm dev:agent   # Chronicle host agent
 
 **1. Open the Dashboard**
 
-Go to **[hack-baorda-web.vercel.app](https://hack-baorda-web.vercel.app)** → Sign in with Clerk → You'll land on the **Command Center**.
+Go to **[chronicle-io.vercel.app](https://chronicle-io.vercel.app)** → Sign in with Clerk → You'll land on the **Command Center**.
 
 **2. Wake up the API**
 
@@ -1020,10 +1020,10 @@ Click into an incident → the **Chronicle AI** chat panel is on the left. Try t
 
 **5. Trigger Real Chaos Scenarios Live!**
 
-* Open the **ShopFlow Demo Storefront** at **[hack-baorda-demo.vercel.app](https://hack-baorda-demo.vercel.app)** and open the **Chaos Engineering Panel** at **[hack-baorda-demo.vercel.app/demo](https://hack-baorda-demo.vercel.app/demo)**.
+* Open the **ShopFlow Demo Storefront** at **[chronicle-app-demo.vercel.app](https://chronicle-app-demo.vercel.app)** and open the **Chaos Engineering Panel** at **[chronicle-app-demo.vercel.app/demo](https://chronicle-app-demo.vercel.app/demo)**.
 * On the Chaos Engineering Panel, click **Activate Scenario** for a scenario like **"Payment Gateway Timeout"** (Severity: P1) or **"CPU Spike"** (Severity: P2).
 * Visit the storefront or simulate checks/transactions to trigger the failure live.
-* Return to the **Chronicle Dashboard** at **[hack-baorda-web.vercel.app](https://hack-baorda-web.vercel.app)** — a new incident will automatically ingest and appear in the Command Center within seconds, starting the SLA countdown timer.
+* Return to the **Chronicle Dashboard** at **[chronicle-io.vercel.app](https://chronicle-io.vercel.app)** — a new incident will automatically ingest and appear in the Command Center within seconds, starting the SLA countdown timer.
 * Click into the new incident and try querying the Chronicle AI copilot:
 ```
 "What caused similar issues before?"
@@ -1095,6 +1095,6 @@ All SLA targets are **configurable per organization** through the Settings dashb
 
 ---
 
-*HackBaroda 2026 · Track 5: AI and Developer Tools*
+*Chronicle — AI & Developer Tools*
 
 </div>

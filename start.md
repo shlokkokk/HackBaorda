@@ -10,7 +10,7 @@ Before starting the backend, you must initialize the tables in Supabase:
 1. Open your **[Supabase Project Dashboard](https://supabase.com)**.
 2. In the left menu, click on the **SQL Editor** tab.
 3. Click **New query** (or "Blank query").
-4. Open **[apps/api/src/db/schema.sql](file:///c:/Users/Admin/OneDrive/projects/HackBaroda/apps/api/src/db/schema.sql)**, copy the entire contents of the file, and paste it into the Supabase editor.
+4. Open **[apps/api/src/db/schema.sql](file:///c:/Users/Admin/OneDrive/projects/chronicle/apps/api/src/db/schema.sql)**, copy the entire contents of the file, and paste it into the Supabase editor.
 5. Click the green **Run** button at the top-right of the editor.
    * *Verify: It should say "Success. No rows returned." and you should see tables like `incidents`, `orgs`, and `users` appear in your Database Table Editor.*
 
@@ -18,7 +18,7 @@ Before starting the backend, you must initialize the tables in Supabase:
 
 ### STEP 2: Boot Up the Platform
 We use a unified developer loop that starts the backend API, the Next.js dashboard, and the host metrics collector agent concurrently.
-1. Open a terminal in the project root (`HackBaroda/`).
+1. Open a terminal in the project root (`chronicle/`).
 2. Run the start command:
    ```bash
    pnpm dev

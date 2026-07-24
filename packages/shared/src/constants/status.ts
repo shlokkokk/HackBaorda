@@ -62,6 +62,12 @@ export const STATUS_CONFIG: Record<IncidentStatus, StatusConfig> = {
   },
 };
 
+export function getStatusConfig(status?: string | null): StatusConfig {
+  if (!status) return STATUS_CONFIG.open;
+  const key = status.toLowerCase() as IncidentStatus;
+  return STATUS_CONFIG[key] ?? STATUS_CONFIG.open;
+}
+
 export const STATUS_ORDER: IncidentStatus[] = [
   'open',
   'investigating',

@@ -14,7 +14,7 @@ import {
   AlertCircle, Wrench, CheckCircle2, BookOpen,
   Shield, Bug, Globe, MessageSquare, Github, Terminal
 } from 'lucide-react';
-import { SEVERITY_CONFIG, STATUS_CONFIG, SOURCE_CONFIG } from '@chronicle/shared';
+import { getSeverityConfig, getStatusConfig, getSourceConfig } from '@chronicle/shared';
 import type { Incident, Severity } from '@chronicle/shared';
 
 const STATUS_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -131,7 +131,7 @@ export default function IncidentsPage() {
               className="input-field w-auto"
             >
               {(['P0', 'P1', 'P2', 'P3', 'P4'] as const).map((s) => (
-                <option key={s} value={s}>{s} — {SEVERITY_CONFIG[s].label}</option>
+                <option key={s} value={s}>{s} — {getSeverityConfig(s).label}</option>
               ))}
             </select>
             <button
@@ -159,7 +159,7 @@ export default function IncidentsPage() {
         <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="input-field w-auto">
           <option value="">All Status</option>
           {(['open', 'investigating', 'mitigating', 'resolved', 'postmortem'] as const).map((s) => (
-            <option key={s} value={s}>{STATUS_CONFIG[s].label}</option>
+            <option key={s} value={s}>{getStatusConfig(s).label}</option>
           ))}
         </select>
         <select value={severityFilter} onChange={(e) => setSeverityFilter(e.target.value)} className="input-field w-auto">
@@ -183,7 +183,7 @@ export default function IncidentsPage() {
           description="Trigger failures from the ShopFlow demo, or report one manually."
           action={
             <a
-              href={`${process.env.NEXT_PUBLIC_DEMO_URL ?? 'http://localhost:3002'}/demo`}
+              href={`${process.env.NEXT_PUBLIC_DEMO_URL ?? 'https://chronicle-app-demo.vercel.app'}/demo`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm font-medium text-primary hover:underline"
@@ -195,9 +195,9 @@ export default function IncidentsPage() {
       ) : (
         <div className="space-y-2">
           {incidents.map((incident) => {
-            const sev = SEVERITY_CONFIG[incident.severity];
-            const status = STATUS_CONFIG[incident.status];
-            const source = SOURCE_CONFIG[incident.source];
+            const sev = getSeverityConfig(incident.severity);
+            const status = getStatusConfig(incident.status);
+            const source = getSourceConfig(incident.source);
             return (
               <Link key={incident.id} href={`/dashboard/incidents/${incident.id}`} className="group block">
                 <div

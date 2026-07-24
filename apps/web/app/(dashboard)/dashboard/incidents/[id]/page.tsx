@@ -31,7 +31,7 @@ const SOURCE_ICONS: Record<string, React.ComponentType<{ className?: string }>> 
   github: Github,
   manual: Terminal,
 };
-import { SEVERITY_CONFIG, STATUS_CONFIG, SOURCE_CONFIG, STATUS_TRANSITIONS } from '@chronicle/shared';
+import { getSeverityConfig, getStatusConfig, getSourceConfig, STATUS_TRANSITIONS } from '@chronicle/shared';
 import type { Incident, IncidentStatus, AgentInteraction } from '@chronicle/shared';
 
 export default function IncidentDetailPage() {
@@ -144,9 +144,9 @@ export default function IncidentDetailPage() {
 
   if (!incident) return <div>Incident not found</div>;
 
-  const sevConfig = SEVERITY_CONFIG[incident.severity];
-  const statusConfig = STATUS_CONFIG[incident.status];
-  const sourceConfig = SOURCE_CONFIG[incident.source];
+  const sevConfig = getSeverityConfig(incident.severity);
+  const statusConfig = getStatusConfig(incident.status);
+  const sourceConfig = getSourceConfig(incident.source);
   const allowedTransitions = STATUS_TRANSITIONS[incident.status] ?? [];
 
   // SLA calculation
@@ -229,7 +229,7 @@ export default function IncidentDetailPage() {
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">Transition to:</span>
               {allowedTransitions.map((status) => {
-                const config = STATUS_CONFIG[status];
+                const config = getStatusConfig(status);
                 const StatusIcon = STATUS_ICONS[status] || AlertCircle;
                 return (
                   <button

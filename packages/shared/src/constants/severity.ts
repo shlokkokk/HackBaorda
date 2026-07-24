@@ -62,6 +62,12 @@ export const SEVERITY_CONFIG: Record<Severity, SeverityConfig> = {
   },
 };
 
+export function getSeverityConfig(sev?: string | null): SeverityConfig {
+  if (!sev) return SEVERITY_CONFIG.P3;
+  const key = sev.toUpperCase() as Severity;
+  return SEVERITY_CONFIG[key] ?? SEVERITY_CONFIG.P3;
+}
+
 export const SEVERITY_ORDER: Severity[] = ['P0', 'P1', 'P2', 'P3', 'P4'];
 
 /** Compare severities: returns negative if a is higher priority */

@@ -185,7 +185,7 @@ export default function AgentsFleetPage() {
                       Metric Collectors
                     </h4>
                     <div className="flex flex-wrap gap-1.5">
-                      {host.collectors_active.map((collector) => (
+                      {(host.collectors_active ?? []).map((collector) => (
                         <span
                           key={collector}
                           className="px-2 py-1 rounded bg-success/10 text-success text-xs font-medium border border-success/10 flex items-center gap-1"
@@ -194,7 +194,7 @@ export default function AgentsFleetPage() {
                           {collector}
                         </span>
                       ))}
-                      {host.collectors_failed.map((collector) => (
+                      {(host.collectors_failed ?? []).map((collector) => (
                         <span
                           key={collector}
                           className="px-2 py-1 rounded bg-destructive/10 text-destructive text-xs font-medium border border-destructive/10 flex items-center gap-1 animate-pulse"
@@ -236,10 +236,10 @@ export default function AgentsFleetPage() {
                       Auto-Discovered Services
                     </h4>
                     <div className="space-y-1.5 max-h-[140px] overflow-y-auto">
-                      {host.discovered_services.length === 0 ? (
+                      {(host.discovered_services ?? []).length === 0 ? (
                         <p className="text-xs text-muted-foreground italic">No active services detected</p>
                       ) : (
-                        host.discovered_services.map((srv, index) => (
+                        (host.discovered_services ?? []).map((srv, index) => (
                           <div
                             key={index}
                             className="flex items-center justify-between p-2 rounded bg-muted/30 border border-border/30 text-xs"

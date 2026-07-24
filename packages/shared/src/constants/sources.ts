@@ -71,6 +71,12 @@ export const SOURCE_CONFIG: Record<IncidentSource, SourceConfig> = {
   },
 };
 
+export function getSourceConfig(source?: string | null): SourceConfig {
+  if (!source) return SOURCE_CONFIG.manual;
+  const key = source.toLowerCase() as IncidentSource;
+  return SOURCE_CONFIG[key] ?? SOURCE_CONFIG.manual;
+}
+
 export const AUTO_SOURCES: IncidentSource[] = Object.entries(SOURCE_CONFIG)
   .filter(([, config]) => config.isAutomatic)
   .map(([key]) => key as IncidentSource);
